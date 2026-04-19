@@ -15,7 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/area")
-@Tag(name = "Area", description = "Api completa de area.")
+@Tag(name = "Area", description = "Endpoints para gerenciamento de areas.")
 public class AreaController {
 
     private final AreaService areaService;

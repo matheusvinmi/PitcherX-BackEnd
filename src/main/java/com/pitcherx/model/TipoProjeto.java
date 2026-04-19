@@ -15,13 +15,13 @@ import lombok.Setter;
 public class TipoProjeto {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_tipo_projeto")
     private Long idTipoProjeto;
 
     @Column(name = "nome_tipo_projeto", nullable = false)
-    private Long nomeTipoProjeto;
+    private String nomeTipoProjeto;
 
     @Column(name = "descricao_tipo_projeto", nullable = false)
-    private Long descricaoTipoProjeto;
+    private String descricaoTipoProjeto;
 }

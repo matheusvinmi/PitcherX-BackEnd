@@ -15,7 +15,7 @@ import lombok.Setter;
 public class TermoPostagem {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_termo_postagem")
     private Long idTermoPostagem;
 

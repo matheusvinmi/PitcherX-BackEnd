@@ -25,7 +25,7 @@ public class AreaService {
     public List<AreaResponseDTO> listarAreas(){
         return areaRepository.findAll().stream()
                 .map(this::toResponse)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Transactional(readOnly = true)
@@ -75,7 +75,7 @@ public class AreaService {
             areaRepository.deleteById(idArea);
         }catch (DataIntegrityViolationException e) {
             // Caso a área estiver ligada a outras tabelas
-            throw new IllegalArgumentException("Não é possível deletar esta área, pois existem subAreas e projetos vinculados a ela.");
+            throw new IllegalArgumentException("Não é possível deletar esta área, pois ela está associada a outras entidades.");
         }
 
     }

@@ -15,7 +15,7 @@ import lombok.Setter;
 public class TermoVinculo {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_termo_vinculo")
     private Long idTermoVinculo;
 
