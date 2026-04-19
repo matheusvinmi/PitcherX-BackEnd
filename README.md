@@ -1,31 +1,84 @@
-# Getting Started
+# PitcherX - Backend
 
-### Reference Documentation
-For further reference, please consider the following sections:
+## Tecnologias Utilizadas
 
-* [Official Apache Maven documentation](https://maven.apache.org/guides/index.html)
-* [Spring Boot Maven Plugin Reference Guide](https://docs.spring.io/spring-boot/4.0.5/maven-plugin)
-* [Create an OCI image](https://docs.spring.io/spring-boot/4.0.5/maven-plugin/build-image.html)
-* [Spring Web](https://docs.spring.io/spring-boot/4.0.5/reference/web/servlet.html)
-* [Spring Boot DevTools](https://docs.spring.io/spring-boot/4.0.5/reference/using/devtools.html)
-* [Spring Data JPA](https://docs.spring.io/spring-boot/4.0.5/reference/data/sql.html#data.sql.jpa-and-spring-data)
-* [Validation](https://docs.spring.io/spring-boot/4.0.5/reference/io/validation.html)
-* [Flyway Migration](https://docs.spring.io/spring-boot/4.0.5/how-to/data-initialization.html#howto.data-initialization.migration-tool.flyway)
-* [Java Mail Sender](https://docs.spring.io/spring-boot/4.0.5/reference/io/email.html)
+Este projeto utiliza as seguintes tecnologias e frameworks:
 
-### Guides
-The following guides illustrate how to use some features concretely:
+### Backend
+- **Java 25** - Linguagem de programação principal
+- **Spring Boot 4.0.5** - Framework para desenvolvimento de aplicações Java
+- **Spring Data JPA** - Abstração para acesso a dados com JPA/Hibernate
+- **PostgreSQL** - Banco de dados relacional
+- **Flyway** - Controle de versão e migração do banco de dados
+- **Spring Validation** - Validação de dados de entrada
+- **Spring Mail** - Envio de emails
+- **Lombok** - Redução de código boilerplate
+- **SpringDoc OpenAPI** - Documentação da API com Swagger UI
 
-* [Building a RESTful Web Service](https://spring.io/guides/gs/rest-service/)
-* [Serving Web Content with Spring MVC](https://spring.io/guides/gs/serving-web-content/)
-* [Building REST services with Spring](https://spring.io/guides/tutorials/rest/)
-* [Accessing Data with JPA](https://spring.io/guides/gs/accessing-data-jpa/)
-* [Validation](https://spring.io/guides/gs/validating-form-input/)
+### Infraestrutura
+- **Docker & Docker Compose** - Containerização e orquestração
+- **Maven** - Gerenciamento de dependências e build
 
-### Maven Parent overrides
+## Arquitetura
 
-Due to Maven's design, elements are inherited from the parent POM to the project POM.
-While most of the inheritance is fine, it also inherits unwanted elements like `<license>` and `<developers>` from the parent.
-To prevent this, the project POM contains empty overrides for these elements.
-If you manually switch to a different parent and actually want the inheritance, you need to remove those overrides.
+### Padrão Arquitetural
+- **REST API** seguindo os **níveis de maturidade de Richardson**:
+  - **Nível 0**: Uso de HTTP como transporte
+  - **Nível 1**: Recursos identificados por URI
+  - **Nível 2**: Uso correto dos verbos HTTP (GET, POST, PUT, DELETE)
+  - **Nível 3**: HATEOAS (Hypermedia As The Engine Of Application State)
 
+### Estrutura do Projeto
+- **Controller**: Camada de apresentação e exposição da API REST
+- **Service**: Camada de lógica de negócio
+- **Repository**: Camada de acesso a dados
+- **DTO**: Objetos de transferência de dados
+- **Model**: Entidades JPA
+- **Config**: Configurações da aplicação
+
+## Como Executar
+
+### Pré-requisitos
+- Docker e Docker Compose instalados
+- Maven 3.6+ (para build local)
+
+### Executando com Docker Compose
+
+1. **Clone o repositório e navegue até a pasta do backend:**
+   ```bash
+   cd PitcherX/BackEnd/pitcherx
+   ```
+
+2. **Execute o build do projeto:**
+   ```bash
+   mvn clean package -DskipTests
+   ```
+
+3. **Inicie os serviços com Docker Compose:**
+   ```bash
+   docker-compose up -d
+   ```
+
+4. **A aplicação estará disponível em:**
+   - **API REST**: http://localhost:8080
+   - **Documentação Swagger**: http://localhost:8080/swagger-ui/index.html
+
+### Serviços no Docker Compose
+- **Aplicação Spring Boot**: Porta 8080
+- **Banco PostgreSQL**: Porta 5433 (internamente 5432)
+
+### Parando os serviços
+```bash
+docker-compose down
+```
+
+### Executando Localmente (sem Docker)
+
+1. **Certifique-se que o PostgreSQL está rodando localmente na porta 5432**
+
+2. **Execute a aplicação:**
+   ```bash
+   mvn spring-boot:run
+   ```
+
+3. **Acesse a documentação em:** http://localhost:8080/swagger-ui/index.html
