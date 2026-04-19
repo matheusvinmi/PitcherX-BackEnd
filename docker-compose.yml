@@ -1,0 +1,27 @@
+services:
+  bd:
+    image: postgres:latest
+    container_name: bd
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: pitcherx
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    networks:
+      - pitcherx-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d pitcherx"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres-data:
+    driver: local
+
+networks:
+  pitcherx-network:
+    driver: bridge
