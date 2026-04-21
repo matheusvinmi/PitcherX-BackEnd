@@ -13,6 +13,7 @@ Este projeto utiliza as seguintes tecnologias e frameworks:
 - **Spring Validation** - Validação de dados de entrada
 - **Spring Mail** - Envio de emails
 - **Lombok** - Redução de código boilerplate
+- **MapStruct** - Mapeamento automático entre DTOs e entidades (mappers)
 - **SpringDoc OpenAPI** - Documentação da API com Swagger UI
 
 ### Infraestrutura
@@ -32,9 +33,16 @@ Este projeto utiliza as seguintes tecnologias e frameworks:
 - **Controller**: Camada de apresentação e exposição da API REST
 - **Service**: Camada de lógica de negócio
 - **Repository**: Camada de acesso a dados
-- **DTO**: Objetos de transferência de dados
+- **DTO**: Objetos de transferência de dados (Data Transfer Objects)
+- **Mapper**: Mapeadores (MapStruct) para conversão entre DTOs e entidades
 - **Model**: Entidades JPA
 - **Config**: Configurações da aplicação
+
+### Padrão de Mapeamento (MapStruct)
+O projeto utiliza **MapStruct** para realizar o mapeamento automático entre DTOs e entidades:
+- **toDTO()**: Converte uma entidade para DTO de resposta
+- **toEntity()**: Converte um DTO de requisição para entidade
+- **updateFromDTO()**: Atualiza uma entidade existente com dados de um DTO
 
 ## Como Executar
 

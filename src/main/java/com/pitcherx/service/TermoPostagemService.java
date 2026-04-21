@@ -2,6 +2,7 @@ package com.pitcherx.service;
 
 import com.pitcherx.dto.termoPostagem.TermoPostagemRequestDTO;
 import com.pitcherx.dto.termoPostagem.TermoPostagemResponseDTO;
+import com.pitcherx.mapper.TermoPostagemMapper;
 import com.pitcherx.model.TermoPostagem;
 import com.pitcherx.repository.TermoPostagemRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -15,15 +16,17 @@ import java.util.List;
 public class TermoPostagemService {
 
     private final TermoPostagemRepository termoPostagemRepository;
+    private final TermoPostagemMapper termoPostagemMapper;
 
-    public TermoPostagemService(TermoPostagemRepository termoPostagemRepository) {
+    public TermoPostagemService(TermoPostagemRepository termoPostagemRepository, TermoPostagemMapper termoPostagemMapper) {
         this.termoPostagemRepository = termoPostagemRepository;
+        this.termoPostagemMapper = termoPostagemMapper;
     }
 
     @Transactional(readOnly = true)
     public List<TermoPostagemResponseDTO> listarTermosPostagem(){
         return termoPostagemRepository.findAll().stream()
-                .map(this::toResponse)
+                .map(termoPostagemMapper::toDTO)
                 .toList();
     }
 
@@ -31,7 +34,7 @@ public class TermoPostagemService {
     public TermoPostagemResponseDTO buscarTermoPostagemPorId(Long id){
         TermoPostagem termoPostagem = termoPostagemRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Sem termo de postagem com o ID informado!"));
-        return toResponse(termoPostagem);
+        return termoPostagemMapper.toDTO(termoPostagem);
     }
 
     @Transactional
@@ -40,12 +43,10 @@ public class TermoPostagemService {
             throw new IllegalArgumentException("Já existe um termo de postagem com esse título!");
         }
 
-        TermoPostagem termoPostagem = new TermoPostagem();
-        termoPostagem.setTituloTermoPostagem(termoPostagemRequestDTO.tituloTermoPostagem());
-        termoPostagem.setDescricaoTermoPostagem(termoPostagemRequestDTO.descricaoTermoPostagem());
+        TermoPostagem termoPostagem = termoPostagemMapper.toEntity(termoPostagemRequestDTO);
 
         TermoPostagem salvo = termoPostagemRepository.save(termoPostagem);
-        return toResponse(salvo);
+        return termoPostagemMapper.toDTO(salvo);
     }
 
     @Transactional
@@ -57,11 +58,10 @@ public class TermoPostagemService {
             throw new IllegalArgumentException("Já existe um termo de postagem com esse título!");
         }
 
-        termoPostagem.setTituloTermoPostagem(termoPostagemRequestDTO.tituloTermoPostagem());
-        termoPostagem.setDescricaoTermoPostagem(termoPostagemRequestDTO.descricaoTermoPostagem());
+        termoPostagemMapper.updateFromDTO(termoPostagemRequestDTO, termoPostagem);
 
-        TermoPostagem atualizado = termoPostagemRepository.save(termoPostagem);
-        return toResponse(atualizado);
+        TermoPostagem salvo = termoPostagemRepository.save(termoPostagem);
+        return termoPostagemMapper.toDTO(salvo);
     }
 
     @Transactional
@@ -74,14 +74,6 @@ public class TermoPostagemService {
         } catch (DataIntegrityViolationException e) {
             throw new IllegalStateException("Não é possível deletar o termo de postagem, pois ele está associada a outras entidades!");
         }
-    }
-
-    public TermoPostagemResponseDTO toResponse(TermoPostagem termoPostagem){
-        return new TermoPostagemResponseDTO(
-                termoPostagem.getIdTermoPostagem(),
-                termoPostagem.getTituloTermoPostagem(),
-                termoPostagem.getDescricaoTermoPostagem()
-        );
     }
 
 }

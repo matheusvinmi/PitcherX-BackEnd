@@ -2,6 +2,7 @@ package com.pitcherx.service;
 
 import com.pitcherx.dto.especialidade.EspecialidadeRequestDTO;
 import com.pitcherx.dto.especialidade.EspecialidadeResponseDTO;
+import com.pitcherx.mapper.EspecialidadeMapper;
 import com.pitcherx.model.Especialidade;
 import com.pitcherx.repository.EspecialidadeRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -15,15 +16,17 @@ import java.util.List;
 public class EspecialidadeService {
 
     private final EspecialidadeRepository especialidadeRepository;
+    private final EspecialidadeMapper especialidadeMapper;
 
-    public EspecialidadeService(EspecialidadeRepository especialidadeRepository) {
+    public EspecialidadeService(EspecialidadeRepository especialidadeRepository, EspecialidadeMapper especialidadeMapper) {
         this.especialidadeRepository = especialidadeRepository;
+        this.especialidadeMapper = especialidadeMapper;
     }
 
     @Transactional(readOnly = true)
     public List<EspecialidadeResponseDTO> listarEspecialidades(){
         return especialidadeRepository.findAll().stream()
-                .map(this::toReponse)
+                .map(especialidadeMapper::toDTO)
                 .toList();
     }
 
@@ -31,7 +34,7 @@ public class EspecialidadeService {
     public EspecialidadeResponseDTO buscarEspecialidadePorId(Long idEspecialidade){
         Especialidade especialidade = especialidadeRepository.findById(idEspecialidade)
                 .orElseThrow(() -> new EntityNotFoundException("Sem especialidade com o ID informado!"));
-        return toReponse(especialidade);
+        return especialidadeMapper.toDTO(especialidade);
     }
 
     @Transactional
@@ -40,11 +43,10 @@ public class EspecialidadeService {
             throw new IllegalArgumentException("Já existe uma especialidade com esse nome!");
         }
 
-        Especialidade especialidade = new Especialidade();
-        especialidade.setNomeEspecialidade(especialidadeRequestDTO.nomeEspecialidade());
+        Especialidade especialidade = especialidadeMapper.toEntity(especialidadeRequestDTO);
 
         Especialidade salvo = especialidadeRepository.save(especialidade);
-        return toReponse(salvo);
+        return especialidadeMapper.toDTO(salvo);
     }
 
     @Transactional
@@ -56,9 +58,10 @@ public class EspecialidadeService {
             throw new IllegalArgumentException("Já existe uma especialidade com esse nome!");
         }
 
-        especialidade.setNomeEspecialidade(especialidadeRequestDTO.nomeEspecialidade());
-        Especialidade atualizado = especialidadeRepository.save(especialidade);
-        return toReponse(atualizado);
+        especialidadeMapper.updateFromDTO(especialidadeRequestDTO, especialidade);
+
+        Especialidade salvo = especialidadeRepository.save(especialidade);
+        return especialidadeMapper.toDTO(salvo);
     }
 
     @Transactional

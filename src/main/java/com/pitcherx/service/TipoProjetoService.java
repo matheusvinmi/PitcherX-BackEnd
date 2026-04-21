@@ -2,6 +2,7 @@ package com.pitcherx.service;
 
 import com.pitcherx.dto.tipoProjeto.TipoProjetoRequestDTO;
 import com.pitcherx.dto.tipoProjeto.TipoProjetoResponseDTO;
+import com.pitcherx.mapper.TipoProjetoMapper;
 import com.pitcherx.model.TipoProjeto;
 import com.pitcherx.repository.TipoProjetoRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -15,15 +16,17 @@ import java.util.List;
 public class TipoProjetoService {
 
     private final TipoProjetoRepository tipoProjetoRepository;
+    private final TipoProjetoMapper tipoProjetoMapper;
 
-    public TipoProjetoService(TipoProjetoRepository tipoProjetoRepository) {
+    public TipoProjetoService(TipoProjetoRepository tipoProjetoRepository, TipoProjetoMapper tipoProjetoMapper) {
         this.tipoProjetoRepository = tipoProjetoRepository;
+        this.tipoProjetoMapper = tipoProjetoMapper;
     }
 
     @Transactional(readOnly = true)
     public List<TipoProjetoResponseDTO> listarTiposProjeto(){
         return tipoProjetoRepository.findAll().stream()
-                .map(this::toResponse)
+                .map(tipoProjetoMapper::toDTO)
                 .toList();
     }
 
@@ -31,7 +34,7 @@ public class TipoProjetoService {
     public TipoProjetoResponseDTO buscarTipoProjetoPorId(Long idTipoProjeto){
         TipoProjeto tipoProjeto = tipoProjetoRepository.findById(idTipoProjeto)
                 .orElseThrow(() -> new EntityNotFoundException("Sem tipo de projeto com o ID informado!"));
-        return toResponse(tipoProjeto);
+        return tipoProjetoMapper.toDTO(tipoProjeto);
     }
 
     @Transactional
@@ -41,12 +44,10 @@ public class TipoProjetoService {
             throw new IllegalArgumentException("Já existe um tipo de projeto com esse nome!");
         }
 
-        TipoProjeto tipoProjeto = new TipoProjeto();
-        tipoProjeto.setNomeTipoProjeto(tipoProjetoRequestDTO.nomeTipoProjeto());
-        tipoProjeto.setDescricaoTipoProjeto(tipoProjetoRequestDTO.descricaoTipoProjeto());
+        TipoProjeto tipoProjeto = tipoProjetoMapper.toEntity(tipoProjetoRequestDTO);
 
         TipoProjeto salvo = tipoProjetoRepository.save(tipoProjeto);
-        return toResponse(salvo);
+        return tipoProjetoMapper.toDTO(salvo);
 
     }
 
@@ -59,11 +60,10 @@ public class TipoProjetoService {
             throw new IllegalArgumentException("Já existe um tipo de projeto com esse nome!");
         }
 
-        tipoProjeto.setNomeTipoProjeto(tipoProjetoRequestDTO.nomeTipoProjeto());
-        tipoProjeto.setDescricaoTipoProjeto(tipoProjetoRequestDTO.descricaoTipoProjeto());
+        tipoProjetoMapper.updateFromDTO(tipoProjetoRequestDTO, tipoProjeto);
 
-        TipoProjeto atualizado = tipoProjetoRepository.save(tipoProjeto);
-        return toResponse(atualizado);
+        TipoProjeto salvo = tipoProjetoRepository.save(tipoProjeto);
+        return tipoProjetoMapper.toDTO(salvo);
     }
 
     @Transactional
@@ -76,14 +76,6 @@ public class TipoProjetoService {
         } catch (DataIntegrityViolationException e) {
             throw new IllegalStateException("Não é possível deletar o tipo de projeto, pois ele está associado a uma ou mais entidades!");
         }
-    }
-
-    public TipoProjetoResponseDTO toResponse(TipoProjeto tipoProjeto){
-        return new TipoProjetoResponseDTO(
-                tipoProjeto.getIdTipoProjeto(),
-                tipoProjeto.getNomeTipoProjeto(),
-                tipoProjeto.getDescricaoTipoProjeto()
-        );
     }
 
 }

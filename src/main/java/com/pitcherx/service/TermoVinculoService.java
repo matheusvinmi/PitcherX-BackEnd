@@ -2,6 +2,7 @@ package com.pitcherx.service;
 
 import com.pitcherx.dto.termoVinculo.TermoVinculoRequestDTO;
 import com.pitcherx.dto.termoVinculo.TermoVinculoResponseDTO;
+import com.pitcherx.mapper.TermoVinculoMapper;
 import com.pitcherx.model.TermoVinculo;
 import com.pitcherx.repository.TermoVinculoRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -15,15 +16,17 @@ import java.util.List;
 public class TermoVinculoService {
 
     private final TermoVinculoRepository termoVinculoRepository;
+    private final TermoVinculoMapper termoVinculoMapper;
 
-    public TermoVinculoService(TermoVinculoRepository termoVinculoRepository) {
+    public TermoVinculoService(TermoVinculoRepository termoVinculoRepository, TermoVinculoMapper termoVinculoMapper) {
         this.termoVinculoRepository = termoVinculoRepository;
+        this.termoVinculoMapper = termoVinculoMapper;
     }
 
     @Transactional(readOnly = true)
     public List<TermoVinculoResponseDTO> listarTermosVinculo() {
         return termoVinculoRepository.findAll().stream()
-                .map(this::toResponse)
+                .map(termoVinculoMapper::toDTO)
                 .toList();
     }
 
@@ -31,7 +34,7 @@ public class TermoVinculoService {
     public TermoVinculoResponseDTO buscarTermoVinculoPorId(Long id) {
         TermoVinculo termoVinculo = termoVinculoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Sem termo de vínculo com o ID informado!"));
-        return toResponse(termoVinculo);
+        return termoVinculoMapper.toDTO(termoVinculo);
     }
 
     @Transactional
@@ -41,12 +44,10 @@ public class TermoVinculoService {
             throw new IllegalArgumentException("Já existe um termo de vínculo com esse título!");
         }
 
-        TermoVinculo termoVinculo = new TermoVinculo();
-        termoVinculo.setTituloTermoVinculo(termoVinculoRequestDTO.tituloTermoVinculo());
-        termoVinculo.setDescricaoTermoVinculo(termoVinculoRequestDTO.descricaoTermoVinculo());
+        TermoVinculo termoVinculo = termoVinculoMapper.toEntity(termoVinculoRequestDTO);
 
         TermoVinculo salvo = termoVinculoRepository.save(termoVinculo);
-        return toResponse(salvo);
+        return termoVinculoMapper.toDTO(salvo);
     }
 
     @Transactional
@@ -58,11 +59,10 @@ public class TermoVinculoService {
             throw new IllegalArgumentException("Já existe um termo de vínculo com esse título!");
         }
 
-        termoVinculo.setTituloTermoVinculo(termoVinculoRequestDTO.tituloTermoVinculo());
-        termoVinculo.setDescricaoTermoVinculo(termoVinculoRequestDTO.descricaoTermoVinculo());
+        termoVinculoMapper.updateFromDTO(termoVinculoRequestDTO, termoVinculo);
 
-        TermoVinculo atualizado = termoVinculoRepository.save(termoVinculo);
-        return toResponse(atualizado);
+        TermoVinculo salvo = termoVinculoRepository.save(termoVinculo);
+        return termoVinculoMapper.toDTO(salvo);
     }
 
     @Transactional
@@ -75,14 +75,6 @@ public class TermoVinculoService {
         } catch (DataIntegrityViolationException e) {
             throw new IllegalStateException("Não é possível deletar o termo de vínculo, pois ele está associado a outras entidades!");
         }
-    }
-
-    public TermoVinculoResponseDTO toResponse(TermoVinculo termoVinculo){
-        return new TermoVinculoResponseDTO(
-                termoVinculo.getIdTermoVinculo(),
-                termoVinculo.getTituloTermoVinculo(),
-                termoVinculo.getDescricaoTermoVinculo()
-        );
     }
 
 }
