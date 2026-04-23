@@ -72,7 +72,6 @@ public class AreaService {
         try {
             areaRepository.deleteById(idArea);
         }catch (DataIntegrityViolationException e) {
-            // Caso a área estiver ligada a outras tabelas
             throw new IllegalArgumentException("Não é possível deletar esta área, pois ela está associada a outras entidades.");
         }
 
