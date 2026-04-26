@@ -6,7 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,7 +29,7 @@ public class PerfilUsuario {
 	@Column(name = "linkedin", nullable = false)
 	private String linkedin;
 	
-	@OneToMany
+	@ManyToOne
 	@JoinColumn(name = "especialidade_id", nullable = false)
 	private Especialidade especialidade;
 	
