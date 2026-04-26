@@ -1,0 +1,14 @@
+package com.pitcherx.repository;
+
+import com.pitcherx.model.Usuario;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
+
+    boolean existsUsuarioByEmailUsuario(String emailUsuario);
+
+    boolean existsUsuarioByEmailUsuarioAndIdUsuarioNot(String emailUsuario, Long idUsuario);
+
+}
