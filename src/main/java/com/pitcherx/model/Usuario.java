@@ -40,6 +40,10 @@ public class Usuario {
 
     @Column(name = "is_active_usuario", nullable = false)
     private Boolean active = true;
+    
+    @ManyToOne
+    @JoinColumn(name = "role_id", nullable = false)
+    private Role role;
 
     @Column(name = "data_criacao_usuario", nullable = false, updatable = false)
     @CreationTimestamp

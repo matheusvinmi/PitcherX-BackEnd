@@ -3,7 +3,9 @@ package com.pitcherx.service;
 import com.pitcherx.dto.usuario.UsuarioRequestDTO;
 import com.pitcherx.dto.usuario.UsuarioResponseDTO;
 import com.pitcherx.mapper.UsuarioMapper;
+import com.pitcherx.model.Role;
 import com.pitcherx.model.Usuario;
+import com.pitcherx.repository.RoleRepository;
 import com.pitcherx.repository.UsuarioRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -17,10 +19,13 @@ public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final UsuarioMapper usuarioMapper;
+    private final RoleRepository roleRepository;
 
-    public UsuarioService(UsuarioRepository usuarioRepository, UsuarioMapper usuarioMapper) {
+    public UsuarioService(UsuarioRepository usuarioRepository, UsuarioMapper usuarioMapper,
+    		RoleRepository roleRepository) {
         this.usuarioRepository = usuarioRepository;
         this.usuarioMapper = usuarioMapper;
+        this.roleRepository = roleRepository;
      }
 
      @Transactional(readOnly = true)
@@ -42,8 +47,12 @@ public class UsuarioService {
         if (usuarioRepository.existsUsuarioByEmailUsuario(usuarioRequestDTO.emailUsuario())){
             throw new IllegalArgumentException("Já existe um usuário com esse email!");
         }
+        
+        Role role = roleRepository.findRoleByNomeRole("USUARIO")
+        		.orElseThrow(() -> new RuntimeException("Se role com o nome informado!"));
 
         Usuario usuario = usuarioMapper.toEntity(usuarioRequestDTO);
+        usuario.setRole(role);
 
         Usuario salvo = usuarioRepository.save(usuario);
         return usuarioMapper.toDTO(salvo);

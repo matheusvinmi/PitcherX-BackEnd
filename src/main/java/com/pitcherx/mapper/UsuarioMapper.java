@@ -11,6 +11,7 @@ import org.mapstruct.MappingTarget;
 public interface UsuarioMapper {
 
     @Mapping(source = "active", target = "active")
+    @Mapping(source = "role.nomeRole", target = "role")
     UsuarioResponseDTO toDTO(Usuario usuario);
 
     @Mapping(target = "idUsuario", ignore = true)

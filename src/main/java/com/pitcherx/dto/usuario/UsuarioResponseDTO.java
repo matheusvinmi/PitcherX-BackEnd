@@ -6,6 +6,7 @@ public record UsuarioResponseDTO(
         String emailUsuario,
         String telefoneUsuario,
         String urlImagemUsuario,
-        Boolean active
+        Boolean active, 
+        String role
 ) {
 }
