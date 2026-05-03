@@ -1,4 +1,4 @@
 ALTER TABLE usuario 
 ADD COLUMN role_id BIGINT NOT NULL,
 ADD CONSTRAINT fk_usuario_role 
-FOREIGN KEY (role_id) REFERENCES role (id_role);
+FOREIGN KEY (role_id) REFERENCES role (id_role) ON UPDATE CASCADE ON DELETE CASCADE;

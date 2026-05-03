@@ -53,7 +53,7 @@ INSERT INTO status (nome_status) VALUES ('INICIADO'), ('EM_ANDAMENTO'), ('FINALI
 
 
 CREATE TABLE role (
-    id_role SERIAL PRIMARY KEY,
+    id_role BIGSERIAL PRIMARY KEY,
     nome_role VARCHAR(50) NOT NULL UNIQUE
 );
 

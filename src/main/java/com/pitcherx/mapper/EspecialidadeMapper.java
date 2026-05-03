@@ -1,6 +1,7 @@
 package com.pitcherx.mapper;
 
 import com.pitcherx.dto.especialidade.EspecialidadeRequestDTO;
+
 import com.pitcherx.dto.especialidade.EspecialidadeResponseDTO;
 import com.pitcherx.model.Especialidade;
 import org.mapstruct.Mapper;
