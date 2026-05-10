@@ -2,8 +2,11 @@ package com.pitcherx.controller;
 
 import java.util.List;
 
+
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,8 +20,8 @@ import com.pitcherx.dto.endereco.EnderecoRequestDTO;
 import com.pitcherx.dto.endereco.EnderecoResponseDTO;
 import com.pitcherx.service.EnderecoService;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/endereco")
@@ -32,28 +35,33 @@ public class EnderecoController {
 	}
 	
 	@GetMapping
+    @Operation(summary = "Listagem de endereços", description = "Este endpoint faz a listagem de todos os endereços.")
 	public ResponseEntity<List<EnderecoResponseDTO>> getEnderecos(){
 		return ResponseEntity.status(HttpStatus.OK).body(enderecoService.listarEndereco());
 	}
 	
 	@GetMapping("/{id}")
+    @Operation(summary = "Busca de endereço por ID", description = "Este endpoint faz a busca de endereço através do ID.")
 	public ResponseEntity<EnderecoResponseDTO> getEnderecoById(@PathVariable Long id){
 		return ResponseEntity.status(HttpStatus.OK).body(enderecoService.buscarEnderecoPorId(id));
 	}
 	
 	@PostMapping
-	public ResponseEntity<EnderecoResponseDTO> createEndereco(@Valid @RequestBody EnderecoRequestDTO enderecoRequestDTO){
+    @Operation(summary = "Cadastro de endereço", description = "Este endpoint faz o cadastro de endereço.")
+	public ResponseEntity<EnderecoResponseDTO> createEndereco(@Validated @RequestBody EnderecoRequestDTO enderecoRequestDTO){
 		EnderecoResponseDTO enderecoResponseDTO = enderecoService.criarEndereco(enderecoRequestDTO);
 		return ResponseEntity.status(HttpStatus.CREATED).body(enderecoResponseDTO);
 	}
 	
 	@PutMapping("/{id}")
-	public ResponseEntity<EnderecoResponseDTO> updateEndereco(@PathVariable Long id, @Valid @RequestBody EnderecoRequestDTO enderecoRequestDTO){
+    @Operation(summary = "Atualização de endereço", description = "Este endpoint faz a atualização de endereço através do ID.")
+	public ResponseEntity<EnderecoResponseDTO> updateEndereco(@PathVariable Long id, @Validated @RequestBody EnderecoRequestDTO enderecoRequestDTO){
 		EnderecoResponseDTO enderecoResponseDTO = enderecoService.atualizarEndereco(id, enderecoRequestDTO);
 		return ResponseEntity.status(HttpStatus.OK).body(enderecoResponseDTO);
 	}
 	
 	@DeleteMapping("/{id}")
+    @Operation(summary = "Remover um endereço", description = "Este endpoint faz a remoção de endereço através do ID.")
 	public ResponseEntity<Void> deleteEndereco(@PathVariable Long id){
 		enderecoService.deletarEndereco(id);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

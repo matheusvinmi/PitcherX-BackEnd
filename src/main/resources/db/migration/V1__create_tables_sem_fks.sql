@@ -35,27 +35,7 @@ CREATE TABLE tipo_vinculo (
     nome_tipo_vinculo VARCHAR(50) NOT NULL UNIQUE
 );
 
--- Inserindo os dados iniciais como no ENUM do diagrama
-INSERT INTO tipo_vinculo (nome_tipo_vinculo) VALUES ('CRIADOR'), ('SOCIO'), ('INVESTIDOR');
-
-
-
-
-CREATE TABLE status (
-    id_status BIGSERIAL PRIMARY KEY,
-    nome_status VARCHAR(50) NOT NULL UNIQUE
-);
-
--- Inserindo os dados iniciais como no ENUM do diagrama
-INSERT INTO status (nome_status) VALUES ('INICIADO'), ('EM_ANDAMENTO'), ('FINALIZADO');
-
-
-
-
 CREATE TABLE role (
     id_role BIGSERIAL PRIMARY KEY,
     nome_role VARCHAR(50) NOT NULL UNIQUE
 );
-
--- Inserindo os dados iniciais como no ENUM do diagrama
-INSERT INTO role (nome_role) VALUES ('EMPRESA'), ('USUARIO'), ('ADMIN');

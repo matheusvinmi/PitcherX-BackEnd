@@ -33,7 +33,7 @@ public class PerfilUsuarioController {
 	}
 	
 	@GetMapping
-	@Operation(description = "Este endpoint faz a listagem de todos os perfis de usuario.")
+	@Operation(summary = "Listar Perfis de usuário", description = "Este endpoint faz a listagem de todos os perfis de usuario.")
 	public ResponseEntity<List<PerfilUsuarioResponseDTO>> getPerfilUsuario(){
 		return ResponseEntity.status(HttpStatus.OK).body(perfilUsuarioService.listarPerfilsUsuario());
 	}
