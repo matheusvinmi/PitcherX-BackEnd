@@ -1,5 +1,6 @@
 package com.pitcherx.config;
 
+import com.pitcherx.security.RoleType;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,11 +23,8 @@ public class DataInitializer {
 
 		return args -> {
 			if (roleRepository.count() == 0) {
-				String[] roles = {"EMPRESA", "ADMIN", "USUARIO"};
-				for(String roleS : roles) {
-					Role role = new Role();
-					role.setNomeRole(roleS);
-					roleRepository.save(role);
+				for (RoleType tipo : RoleType.values()) {
+					roleRepository.save(new Role(tipo));
 				}
 				IO.println("Roles adicionadas ao banco de dados.");
 			}
@@ -47,7 +45,7 @@ public class DataInitializer {
 				admin.setEmailUsuario("adm@gmail.com");
 				admin.setSenhaUsuario("adm1234567");
 
-				Role role = roleRepository.findRoleByNomeRole("ADMIN")
+				Role role = roleRepository.findRoleByNomeRole(RoleType.ADMIN)
 						.orElseThrow(() -> new RuntimeException("Sem role com o nome informado!"));
 
 				admin.setRole(role);

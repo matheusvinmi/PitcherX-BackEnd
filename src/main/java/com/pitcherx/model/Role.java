@@ -1,11 +1,7 @@
 package com.pitcherx.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.pitcherx.security.RoleType;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,8 +19,13 @@ public class Role {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id_role")
 	private Long idRole;
-	
+
+	@Enumerated(EnumType.STRING)
 	@Column(name = "nome_role", nullable = false, unique = true)
-	private String nomeRole;
+	private RoleType nomeRole;
+
+	public Role(RoleType nomeRole) {
+		this.nomeRole = nomeRole;
+	}
 
 }

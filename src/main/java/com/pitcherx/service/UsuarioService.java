@@ -7,6 +7,7 @@ import com.pitcherx.model.Role;
 import com.pitcherx.model.Usuario;
 import com.pitcherx.repository.RoleRepository;
 import com.pitcherx.repository.UsuarioRepository;
+import com.pitcherx.security.RoleType;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -48,7 +49,7 @@ public class UsuarioService {
             throw new IllegalArgumentException("Já existe um usuário com esse email!");
         }
         
-        Role role = roleRepository.findRoleByNomeRole("USUARIO")
+        Role role = roleRepository.findRoleByNomeRole(RoleType.USUARIO)
         		.orElseThrow(() -> new RuntimeException("Se role com o nome informado!"));
 
         Usuario usuario = usuarioMapper.toEntity(usuarioRequestDTO);
