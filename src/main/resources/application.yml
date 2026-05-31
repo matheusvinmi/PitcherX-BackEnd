@@ -2,15 +2,17 @@ spring:
   application:
     name: pitcherx
 
+  config:
+    import: optional:file:.env[.properties]
   datasource:
-    url: jdbc:postgresql://localhost:5432/pitcherx
-    username: postgres  
-    password: 1234
+    url: jdbc:postgresql://${BD_SERVER}:${BD_PORT}/${BD_NAME}
+    username: ${BD_USER}
+    password: ${BD_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     show-sql: true
     properties:
       hibernate:
@@ -22,6 +24,21 @@ spring:
     locations: classpath:db/migration
     baseline-on-migrate: true
     baseline-version: 0.1.0
+
+    swagger:
+      enabled: true
+
+logging:
+  level:
+    root: INFO
+    org:
+      springframework:
+        web: DEBUG
+      hibernate:
+        SQL: DEBUG
+        type:
+          descriptor:
+            sql: TRACE
 
 
 

@@ -47,3 +47,6 @@ docker-compose.prod.yml
 docker-compose.test.yml
 docker-compose.local.yml
 docker-compose.*.yml
+
+## Environment Files ###
+.env

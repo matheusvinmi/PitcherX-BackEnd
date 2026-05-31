@@ -13,14 +13,16 @@ import com.pitcherx.repository.UsuarioRepository;
 
 @Configuration
 public class DataInitializer {
-	
+
 	@Bean
-	CommandLineRunner criarRolesInicial(RoleRepository roleRepository) {
+	CommandLineRunner inicializarDados(
+			RoleRepository roleRepository,
+			TipoVinculoRepository tipoVinculoRepository,
+			UsuarioRepository usuarioRepository) {
+
 		return args -> {
 			if (roleRepository.count() == 0) {
-				
 				String[] roles = {"EMPRESA", "ADMIN", "USUARIO"};
-				
 				for(String roleS : roles) {
 					Role role = new Role();
 					role.setNomeRole(roleS);
@@ -28,16 +30,9 @@ public class DataInitializer {
 				}
 				IO.println("Roles adicionadas ao banco de dados.");
 			}
-		};
-	}
-	
-	@Bean
-	CommandLineRunner criarTiposVinculoInicial(TipoVinculoRepository tipoVinculoRepository) {
-		return args -> {
+
 			if (tipoVinculoRepository.count() == 0) {
-				
 				String[] tipoVinculos = {"CRIADOR", "SOCIO", "INVESTIDOR"};
-				
 				for(String tpVinculo : tipoVinculos) {
 					TipoVinculo tipoVinculo = new TipoVinculo();
 					tipoVinculo.setNomeTipoVinculo(tpVinculo);
@@ -45,24 +40,20 @@ public class DataInitializer {
 				}
 				IO.println("Tipos de vinculo adicionadas ao banco de dados.");
 			}
+
+			if (!usuarioRepository.existsUsuarioByEmailUsuario("adm@gmail.com")) {
+				Usuario admin = new Usuario();
+				admin.setNomeUsuario("admin");
+				admin.setEmailUsuario("adm@gmail.com");
+				admin.setSenhaUsuario("adm1234567");
+
+				Role role = roleRepository.findRoleByNomeRole("ADMIN")
+						.orElseThrow(() -> new RuntimeException("Sem role com o nome informado!"));
+
+				admin.setRole(role);
+				usuarioRepository.save(admin);
+				IO.println("Admin inicial adicionado ao banco de dados.");
+			}
 		};
 	}
-	
-	@Bean
-    CommandLineRunner criarAdminInicial(UsuarioRepository usuarioRepository, RoleRepository roleRepository) {
-        return args -> {
-            if (!usuarioRepository.existsUsuarioByEmailUsuario("adm@gmail.com")) {
-                Usuario admin = new Usuario();
-                admin.setNomeUsuario("admin");
-                admin.setEmailUsuario("adm@gmail.com");
-                admin.setSenhaUsuario("adm1234567");
-                Role role = roleRepository.findRoleByNomeRole("ADMIN")
-                		.orElseThrow(() -> new RuntimeException("Se role com o nome informado!"));
-                admin.setRole(role);
-                usuarioRepository.save(admin);
-            }
-            IO.println("Admin inicial adicionado ao banco de dados.");
-        };
-    }
-	
 }
