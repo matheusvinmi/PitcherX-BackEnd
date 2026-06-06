@@ -51,7 +51,7 @@ public class TipoProjetoController {
 
     @DeleteMapping
     @Operation(description = "Endpoint para excluir um tipo de projeto por ID")
-    public ResponseEntity<Void> deleteTipoProjeto(@RequestParam Long id) {
+    public ResponseEntity<Void> deleteTipoProjeto(@PathVariable Long id) {
         tipoProjetoService.deletarTipoProjeto(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

@@ -18,7 +18,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
@@ -39,12 +39,12 @@ logging:
     root: INFO
     org:
       springframework:
-        web: DEBUG
+        web: INFO
       hibernate:
-        SQL: DEBUG
+        SQL: INFO
         type:
           descriptor:
-            sql: TRACE
+            sql: WARN
 
 
 

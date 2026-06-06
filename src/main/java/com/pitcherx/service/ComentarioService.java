@@ -10,7 +10,11 @@ import com.pitcherx.dto.comentario.ComentarioRequestDTO;
 import com.pitcherx.dto.comentario.ComentarioResponseDTO;
 import com.pitcherx.mapper.ComentarioMapper;
 import com.pitcherx.model.Comentario;
+import com.pitcherx.model.Postagem;
+import com.pitcherx.model.Usuario;
 import com.pitcherx.repository.ComentarioRepository;
+import com.pitcherx.repository.PostagemRepository;
+import com.pitcherx.repository.UsuarioRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -19,10 +23,15 @@ public class ComentarioService {
 
 	private final ComentarioRepository comentarioRepository;
 	private final ComentarioMapper comentarioMapper;
+	private final PostagemRepository postagemRepository;
+	private final UsuarioRepository usuarioRepository;
 	
-	public ComentarioService(ComentarioRepository comentarioRepository, ComentarioMapper comentarioMapper) {
+	public ComentarioService(ComentarioRepository comentarioRepository, ComentarioMapper comentarioMapper,
+			PostagemRepository postagemRepository, UsuarioRepository usuarioRepository) {
 		this.comentarioRepository = comentarioRepository;
 		this.comentarioMapper = comentarioMapper;
+		this.postagemRepository = postagemRepository;
+		this.usuarioRepository = usuarioRepository;
 	}
 	
 	@Transactional(readOnly = true)
@@ -41,8 +50,15 @@ public class ComentarioService {
 	
 	@Transactional
 	public ComentarioResponseDTO criarComentario(ComentarioRequestDTO comentarioRequestDTO) {
+		Postagem postagem = postagemRepository.findById(comentarioRequestDTO.postagemId())
+				.orElseThrow(() -> new EntityNotFoundException("Sem postagem com o ID informado!"));
+		
+		Usuario usuario = usuarioRepository.findById(comentarioRequestDTO.usuarioId())
+				.orElseThrow(() -> new EntityNotFoundException("Sem usuário com o ID informado!"));
 		
 		Comentario comentario = comentarioMapper.toEntity(comentarioRequestDTO);
+		comentario.setPostagem(postagem);
+		comentario.setUsuario(usuario);
 		
 		Comentario salvo = comentarioRepository.save(comentario);
 		return comentarioMapper.toDTO(salvo);		
