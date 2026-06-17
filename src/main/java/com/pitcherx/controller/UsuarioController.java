@@ -3,11 +3,14 @@ package com.pitcherx.controller;
 import com.pitcherx.dto.usuario.UsuarioRequestDTO;
 
 import com.pitcherx.dto.usuario.UsuarioResponseDTO;
+import com.pitcherx.dto.usuario.login.LoginRequestDTO;
+import com.pitcherx.dto.usuario.login.LoginResponseDTO;
 import com.pitcherx.service.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +28,7 @@ public class UsuarioController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(description = "Este endpoint faz a listagem de todos os usuários.")
     public ResponseEntity<List<UsuarioResponseDTO>> getUsuario() {
         return ResponseEntity.status(HttpStatus.OK).body(usuarioService.listarUsuarios());
@@ -36,7 +40,7 @@ public class UsuarioController {
         return ResponseEntity.status(HttpStatus.OK).body(usuarioService.buscarUsuarioPorId(id));
     }
 
-    @PostMapping
+    @PostMapping("/cadastro-usuario")
     @Operation(description = "Este endpoint faz o cadastro de usuário.")
     public ResponseEntity<UsuarioResponseDTO> saveUsuario(@Validated @RequestBody UsuarioRequestDTO usuarioRequestDTO) {
         UsuarioResponseDTO usuarioResponseDTO = usuarioService.criarUsuario(usuarioRequestDTO);
@@ -61,6 +65,13 @@ public class UsuarioController {
     public ResponseEntity<Void> deleteUsuario(@PathVariable Long id) {
         usuarioService.deletarUsuario(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @PostMapping("/login")
+    @Operation(description = "Este endpoint faz o login de usuário.")
+    public ResponseEntity<LoginResponseDTO> login(@Validated @RequestBody LoginRequestDTO loginRequestDTO) {
+        LoginResponseDTO loginResponseDTO = usuarioService.login(loginRequestDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(loginResponseDTO);
     }
 
 }

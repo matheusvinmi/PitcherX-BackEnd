@@ -11,9 +11,18 @@ import com.pitcherx.model.Usuario;
 import com.pitcherx.repository.RoleRepository;
 import com.pitcherx.repository.TipoVinculoRepository;
 import com.pitcherx.repository.UsuarioRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.util.Set;
 
 @Configuration
 public class DataInitializer {
+
+	private final PasswordEncoder passwordEncoder;
+
+	public DataInitializer(PasswordEncoder passwordEncoder) {
+		this.passwordEncoder = passwordEncoder;
+	}
 
 	@Bean
 	CommandLineRunner inicializarDados(
@@ -43,12 +52,13 @@ public class DataInitializer {
 				Usuario admin = new Usuario();
 				admin.setNomeUsuario("admin");
 				admin.setEmailUsuario("adm@gmail.com");
-				admin.setSenhaUsuario("adm1234567");
+				String senhaHash = passwordEncoder.encode("adm1234567");
+				admin.setSenhaUsuario(senhaHash);
 
 				Role role = roleRepository.findRoleByNomeRole(RoleType.ADMIN)
 						.orElseThrow(() -> new RuntimeException("Sem role com o nome informado!"));
 
-				admin.setRole(role);
+				admin.setRoles(Set.of(role));
 				usuarioRepository.save(admin);
 				IO.println("Admin inicial adicionado ao banco de dados.");
 			}
