@@ -2,14 +2,7 @@ package com.pitcherx.model;
 
 import java.time.LocalDateTime;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,7 +20,8 @@ public class StatusProjeto {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id_status_projeto")
 	private Long idStatusProjeto;
-	
+
+	@Enumerated(EnumType.STRING)
 	@Column(name = "status_pj", nullable = false)
 	private Status status;
 	

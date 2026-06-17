@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,18 +34,21 @@ public class ProjetoController {
 	}
 	
 	@GetMapping
+	@PreAuthorize("permitAll()")
     @Operation(description = "Endpoint para listar os projetos publicados")
 	public ResponseEntity<List<ProjetoResponseDTO>> getProjetos(){
 		return ResponseEntity.status(HttpStatus.OK).body(projetoService.listarProjetos());
 	}
 	
 	@GetMapping("/{id}")
+	@PreAuthorize("permitAll()")
     @Operation(description = "Endpoint para obter um projeto específico por ID")
 	public ResponseEntity<ProjetoResponseDTO> getProjetoById(@PathVariable Long id){
 		return ResponseEntity.status(HttpStatus.OK).body(projetoService.buscarProjetoPorId(id));
 	}
 	
 	@PostMapping
+	@PreAuthorize("permitAll()")
     @Operation(description = "Endpoint para criar um novo projeto")
 	public ResponseEntity<ProjetoResponseDTO> createProjeto(@Validated @RequestBody ProjetoRequestDTO projetoRequestDTO){
 		ProjetoResponseDTO projetoResponseDTO = projetoService.criarProjeto(projetoRequestDTO);
@@ -52,6 +56,7 @@ public class ProjetoController {
 	}
 	
 	@PutMapping("/{id}")
+	@PreAuthorize("hasAnyRole('ADMIN', 'USUARIO', 'EMPRESA')")
     @Operation(description = "Endpoint para atualizar um projeto")
 	public ResponseEntity<ProjetoResponseDTO> updateProjeto(@PathVariable Long id, @Validated @RequestBody ProjetoRequestDTO projetoRequestDTO){
 		ProjetoResponseDTO projetoResponseDTO = projetoService.atualizarProjeto(id, projetoRequestDTO);
@@ -59,6 +64,8 @@ public class ProjetoController {
 	}
 	
 	@DeleteMapping("/{id}")
+	@PreAuthorize("hasAnyRole('ADMIN', 'USUARIO', 'EMPRESA')")
+	@Operation(description = "Endpoint para deletar um projeto")
 	public ResponseEntity<Void> deleteProjeto(@PathVariable Long id){
 		projetoService.deletarProjeto(id);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

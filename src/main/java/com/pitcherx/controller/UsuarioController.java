@@ -35,6 +35,7 @@ public class UsuarioController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(description = "Este endpoint faz a busca de usuário através do ID.")
     public ResponseEntity<UsuarioResponseDTO> getUsuarioById(Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(usuarioService.buscarUsuarioPorId(id));
@@ -48,6 +49,7 @@ public class UsuarioController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.idUsuario")
     @Operation(description = "Este endpoint faz a atualização de usuário através do ID.")
     public ResponseEntity<UsuarioResponseDTO> updateUsuario(@PathVariable Long id, @Validated @RequestBody UsuarioRequestDTO usuarioRequestDTO) {
         UsuarioResponseDTO usuarioResponseDTO = usuarioService.atualizarUsuario(id, usuarioRequestDTO);
@@ -55,12 +57,14 @@ public class UsuarioController {
     }
 
     @PutMapping("/ativar-desativar/{id}")
+    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.idUsuario")
     @Operation(description = "Este endpoint faz a ativação ou desativação de usuário através do ID.")
     public ResponseEntity<UsuarioResponseDTO> ativarDesativarUsuario(@PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(usuarioService.ativarDesativarUsuario(id));
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.idUsuario")
     @Operation(description = "Este endpoint faz a exclusão de usuário através do ID.")
     public ResponseEntity<Void> deleteUsuario(@PathVariable Long id) {
         usuarioService.deletarUsuario(id);

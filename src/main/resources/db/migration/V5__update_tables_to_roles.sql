@@ -5,9 +5,3 @@ CREATE TABLE usuario_role (
                               CONSTRAINT fk_usuario_role_usuario FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE,
                               CONSTRAINT fk_usuario_role_role    FOREIGN KEY (id_role)    REFERENCES role(id_role)       ON DELETE CASCADE
 );
-
-INSERT INTO usuario_role (id_usuario, id_role)
-SELECT id_usuario, role_id FROM usuario;
-
-ALTER TABLE usuario DROP CONSTRAINT fk_usuario_role;
-ALTER TABLE usuario DROP COLUMN role_id;

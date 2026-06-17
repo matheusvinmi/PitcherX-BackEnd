@@ -8,4 +8,6 @@ import com.pitcherx.model.Projeto;
 @Repository
 public interface ProjetoRepository extends JpaRepository<Projeto, Long>{
 
+    //boolean existsProjetoByIdProjetoAndUsuarioByEmailUsuario(Long idProjeto, String emailUsuario);
+
 }
