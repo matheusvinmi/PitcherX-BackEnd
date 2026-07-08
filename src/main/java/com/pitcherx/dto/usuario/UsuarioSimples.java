@@ -4,7 +4,6 @@ public record UsuarioSimples(
         Long idUsuario,
         String nomeUsuario,
         String emailUsuario,
-        Boolean active,
-        String role
+        Boolean active
 ) {
 }

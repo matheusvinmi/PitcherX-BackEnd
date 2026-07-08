@@ -2,6 +2,8 @@ package com.pitcherx.controller;
 
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -20,6 +22,7 @@ import com.pitcherx.service.SubComentarioService;
 
 @RestController
 @RequestMapping("/sub-comentario")
+@Tag(name = "SubComentario", description = "Endpoints para gerenciamento de sub-comentários.")
 public class SubComentarioController {
 
 	private final SubComentarioService subComentarioService;
@@ -29,28 +32,33 @@ public class SubComentarioController {
 	}
 	
 	@GetMapping
+	@Operation(summary = "Listar sub-comentários", description = "Retorna uma lista de todos os sub-comentários cadastrados.")
 	public ResponseEntity<List<SubComentarioResponseDTO>> getSubComentarios(){
 		return ResponseEntity.status(HttpStatus.OK).body(subComentarioService.listarSubComentarios());
 	}
 	
 	@GetMapping("/{id}")
+	@Operation(summary = "Buscar sub-comentário por ID", description = "Retorna um sub-comentário específico com base no ID fornecido.")
 	public ResponseEntity<SubComentarioResponseDTO> getSubComentarioById(@PathVariable Long id){
 		return ResponseEntity.status(HttpStatus.OK).body(subComentarioService.buscarSubComentarioPorId(id));
 	}
 	
 	@PostMapping
+	@Operation(summary = "Criar sub-comentário", description = "Cria um novo sub-comentário com base nos dados fornecidos.")
 	public ResponseEntity<SubComentarioResponseDTO> saveSubComentario(@Validated @RequestBody SubComentarioRequestDTO subComentarioRequestDTO){
 		SubComentarioResponseDTO subComentarioResponseDTO = subComentarioService.criarSubComentario(subComentarioRequestDTO);
 		return ResponseEntity.status(HttpStatus.CREATED).body(subComentarioResponseDTO);
 	}
 	
 	@PutMapping("/{id}")
+	@Operation(summary = "Atualizar sub-comentário", description = "Atualiza um sub-comentário existente com base nos dados fornecidos.")
 	public ResponseEntity<SubComentarioResponseDTO> updateSubComentario(@PathVariable Long id, @Validated @RequestBody SubComentarioRequestDTO subComentarioRequestDTO){
 		SubComentarioResponseDTO subComentarioResponseDTO = subComentarioService.atualizarSubComentario(id, subComentarioRequestDTO);
 		return ResponseEntity.status(HttpStatus.OK).body(subComentarioResponseDTO);
 	}
 	
 	@DeleteMapping("/{id}")
+	@Operation(summary = "Deletar sub-comentário", description = "Deleta um sub-comentário existente com base no ID fornecido.")
 	public ResponseEntity<Void> deleteSubComentario(@PathVariable Long id){
 		subComentarioService.deletarSubComentario(id);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
