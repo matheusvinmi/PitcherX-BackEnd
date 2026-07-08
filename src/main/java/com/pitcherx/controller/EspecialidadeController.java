@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/especialidades")
+@RequestMapping("/especialidade")
 @Tag(name = "Especialidade", description = "Endpoints para gerenciamento de especialidades.")
 public class EspecialidadeController {
 

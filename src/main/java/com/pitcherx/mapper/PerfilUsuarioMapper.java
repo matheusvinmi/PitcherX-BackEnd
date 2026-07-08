@@ -14,6 +14,8 @@ public interface PerfilUsuarioMapper {
 	PerfilUsuarioResponseDTO toDTO(PerfilUsuario perfilUsuario);
 	
 	@Mapping(target = "idPerfilUsuario", ignore = true)
+	@Mapping(target = "usuario.idUsuario", source = "idUsuario")
+	@Mapping(target = "especialidade.idEspecialidade", source = "idEspecialidade")
 	PerfilUsuario toEntity(PerfilUsuarioRequestDTO perfilUsuarioRequestDTO);
 	
 	void updateFromDTO(PerfilUsuarioRequestDTO perfilUsuarioRequestDTO, @MappingTarget PerfilUsuario perfilUsuario);
