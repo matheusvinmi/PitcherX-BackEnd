@@ -1,5 +1,5 @@
 CREATE TABLE contrato(
-    id_contrato SERIAL PRIMARY KEY,
+    id_contrato BIGSERIAL PRIMARY KEY,
     titulo_contrato VARCHAR(255) NOT NULL,
     descricao_contrato TEXT NOT NULL,
     data_inicio_contrato TIMESTAMP NOT NULL,
