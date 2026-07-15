@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@PreAuthorize("hasRole('ADMIN')")
 @RequestMapping("/usuario")
 @Tag(name = "Usuario", description = "Endpoints relacionados a usuários")
 public class UsuarioController {
@@ -28,7 +27,6 @@ public class UsuarioController {
         this.usuarioService = usuarioService;
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(description = "Este endpoint faz a listagem de todos os usuários.")
@@ -36,7 +34,6 @@ public class UsuarioController {
         return ResponseEntity.status(HttpStatus.OK).body(usuarioService.listarUsuarios());
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(description = "Este endpoint faz a busca de usuário através do ID.")
@@ -51,7 +48,6 @@ public class UsuarioController {
         return ResponseEntity.status(HttpStatus.CREATED).body(usuarioResponseDTO);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.idUsuario")
     @Operation(description = "Este endpoint faz a atualização de usuário através do ID.")
@@ -60,7 +56,6 @@ public class UsuarioController {
         return ResponseEntity.status(HttpStatus.OK).body(usuarioResponseDTO);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/ativar-desativar/{id}")
     @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.idUsuario")
     @Operation(description = "Este endpoint faz a ativação ou desativação de usuário através do ID.")
@@ -68,7 +63,6 @@ public class UsuarioController {
         return ResponseEntity.status(HttpStatus.OK).body(usuarioService.ativarDesativarUsuario(id));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.idUsuario")
     @Operation(description = "Este endpoint faz a exclusão de usuário através do ID.")

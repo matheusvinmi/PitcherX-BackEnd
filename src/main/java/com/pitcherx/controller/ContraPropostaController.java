@@ -19,10 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.pitcherx.dto.contraProposta.ContraPropostaRequestDTO;
 import com.pitcherx.dto.contraProposta.ContraPropostaResponseDTO;
 import com.pitcherx.service.ContraPropostaService;
-import org.springframework.security.access.prepost.PreAuthorize;
 
 @RestController
-@PreAuthorize("hasRole('ADMIN')")
 @RequestMapping("/contra-proposta")
 @Tag(name = "Contra Proposta", description = "Endpoints para gerenciamento de contra propostas")
 public class ContraPropostaController {
@@ -33,21 +31,18 @@ public class ContraPropostaController {
 		this.contraPropostaService = contraPropostaService;
 	}
 	
-	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping
 	@Operation(summary = "Listar Contra Propostas", description = "Retorna uma lista de todas as contra propostas cadastradas")
 	public ResponseEntity<List<ContraPropostaResponseDTO>> getContraProposta(){
 		return ResponseEntity.status(HttpStatus.OK).body(contraPropostaService.listarContraPropostas());
 	}
 	
-	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/{id}")
 	@Operation(summary = "Buscar Contra Proposta por ID", description = "Retorna uma contra proposta específica com base no ID fornecido")
 	public ResponseEntity<ContraPropostaResponseDTO> getContraPropostaById(@PathVariable Long id){
 		return ResponseEntity.status(HttpStatus.OK).body(contraPropostaService.buscarContraPropostaPorId(id));
 	}
 	
-	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping
 	@Operation(summary = "Criar Contra Proposta", description = "Cria uma nova contra proposta com base nos dados fornecidos")
 	public ResponseEntity<ContraPropostaResponseDTO> saveContraProposta(@Validated @RequestBody ContraPropostaRequestDTO contraPropostaRequestDTO){
@@ -55,7 +50,6 @@ public class ContraPropostaController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(contraPropostaResponseDTO);
 	}
 	
-	@PreAuthorize("hasRole('ADMIN')")
 	@PutMapping("/{id}")
 	@Operation(summary = "Atualizar Contra Proposta", description = "Atualiza uma contra proposta existente com base no ID fornecido e nos dados fornecidos")
 	public ResponseEntity<ContraPropostaResponseDTO> updateContraProposta(@PathVariable Long id, @Validated @RequestBody ContraPropostaRequestDTO contraPropostaRequestDTO){
@@ -63,7 +57,6 @@ public class ContraPropostaController {
 		return ResponseEntity.status(HttpStatus.OK).body(contraPropostaResponseDTO);
 	}
 	
-	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/{id}")
 	@Operation(summary = "Deletar Contra Proposta", description = "Deleta uma contra proposta existente com base no ID fornecido")
 	public ResponseEntity<Void> deleteContraProposta(@PathVariable Long id){

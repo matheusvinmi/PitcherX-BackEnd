@@ -22,10 +22,8 @@ import com.pitcherx.service.EnderecoService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.security.access.prepost.PreAuthorize;
 
 @RestController
-@PreAuthorize("hasRole('ADMIN')")
 @RequestMapping("/endereco")
 @Tag(name = "Endereco", description = "Endpoints para gerenciamento de endereços.")
 public class EnderecoController {
@@ -36,21 +34,18 @@ public class EnderecoController {
 		this.enderecoService = enderecoService;
 	}
 	
-	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping
     @Operation(summary = "Listagem de endereços", description = "Este endpoint faz a listagem de todos os endereços.")
 	public ResponseEntity<List<EnderecoResponseDTO>> getEnderecos(){
 		return ResponseEntity.status(HttpStatus.OK).body(enderecoService.listarEndereco());
 	}
 	
-	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/{id}")
     @Operation(summary = "Busca de endereço por ID", description = "Este endpoint faz a busca de endereço através do ID.")
 	public ResponseEntity<EnderecoResponseDTO> getEnderecoById(@PathVariable Long id){
 		return ResponseEntity.status(HttpStatus.OK).body(enderecoService.buscarEnderecoPorId(id));
 	}
 	
-	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping
     @Operation(summary = "Cadastro de endereço", description = "Este endpoint faz o cadastro de endereço.")
 	public ResponseEntity<EnderecoResponseDTO> createEndereco(@Validated @RequestBody EnderecoRequestDTO enderecoRequestDTO){
@@ -58,7 +53,6 @@ public class EnderecoController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(enderecoResponseDTO);
 	}
 	
-	@PreAuthorize("hasRole('ADMIN')")
 	@PutMapping("/{id}")
     @Operation(summary = "Atualização de endereço", description = "Este endpoint faz a atualização de endereço através do ID.")
 	public ResponseEntity<EnderecoResponseDTO> updateEndereco(@PathVariable Long id, @Validated @RequestBody EnderecoRequestDTO enderecoRequestDTO){
@@ -66,7 +60,6 @@ public class EnderecoController {
 		return ResponseEntity.status(HttpStatus.OK).body(enderecoResponseDTO);
 	}
 	
-	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/{id}")
     @Operation(summary = "Remover um endereço", description = "Este endpoint faz a remoção de endereço através do ID.")
 	public ResponseEntity<Void> deleteEndereco(@PathVariable Long id){
