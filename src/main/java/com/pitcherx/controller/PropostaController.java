@@ -20,8 +20,10 @@ import com.pitcherx.dto.proposta.PropostaResponseDTO;
 import com.pitcherx.service.PropostaService;
 
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 @RestController
+@PreAuthorize("hasRole('ADMIN')")
 @RequestMapping("/proposta")
 @Tag(name = "Proposta", description = "Endpoints para gerenciamento de propostas")
 public class PropostaController {
@@ -32,18 +34,21 @@ public class PropostaController {
 		this.propostaService = propostaService;
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping
 	@Operation(summary = "Listar Propostas", description = "Retorna uma lista de todas as propostas cadastradas")
 	public ResponseEntity<List<PropostaResponseDTO>> getPropostas(){
 		return ResponseEntity.status(HttpStatus.OK).body(propostaService.listarPropostas());
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/{id}")
 	@Operation(summary = "Buscar Proposta por ID", description = "Retorna uma proposta específica com base no ID fornecido")
 	public ResponseEntity<PropostaResponseDTO> getPropostaById(@PathVariable Long id){
 		return ResponseEntity.status(HttpStatus.OK).body(propostaService.buscarPropostaPorId(id));
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping
 	@Operation(summary = "Criar Proposta", description = "Cria uma nova proposta com base nos dados fornecidos")
 	public ResponseEntity<PropostaResponseDTO> saveProposta(@Valid @RequestBody PropostaRequestDTO propostaRequestDTO){
@@ -51,6 +56,7 @@ public class PropostaController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(propostaResponseDTO);
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@PutMapping("/{id}")
 	@Operation(summary = "Atualizar Proposta", description = "Atualiza uma proposta existente com base no ID fornecido e nos dados fornecidos")
 	public ResponseEntity<PropostaResponseDTO> updateProposta(@PathVariable Long id, @Valid @RequestBody PropostaRequestDTO propostaRequestDTO){
@@ -58,6 +64,7 @@ public class PropostaController {
 		return ResponseEntity.status(HttpStatus.OK).body(propostaResponseDTO);
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/{id}")
 	@Operation(summary = "Deletar Proposta", description = "Deleta uma proposta existente com base no ID fornecido")
 	public ResponseEntity<Void> deleteProposta(@PathVariable Long id){

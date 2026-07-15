@@ -19,8 +19,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.pitcherx.dto.subComentario.SubComentarioRequestDTO;
 import com.pitcherx.dto.subComentario.SubComentarioResponseDTO;
 import com.pitcherx.service.SubComentarioService;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 @RestController
+@PreAuthorize("hasRole('ADMIN')")
 @RequestMapping("/sub-comentario")
 @Tag(name = "SubComentario", description = "Endpoints para gerenciamento de sub-comentários.")
 public class SubComentarioController {
@@ -31,18 +33,21 @@ public class SubComentarioController {
 		this.subComentarioService = subComentarioService;
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping
 	@Operation(summary = "Listar sub-comentários", description = "Retorna uma lista de todos os sub-comentários cadastrados.")
 	public ResponseEntity<List<SubComentarioResponseDTO>> getSubComentarios(){
 		return ResponseEntity.status(HttpStatus.OK).body(subComentarioService.listarSubComentarios());
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/{id}")
 	@Operation(summary = "Buscar sub-comentário por ID", description = "Retorna um sub-comentário específico com base no ID fornecido.")
 	public ResponseEntity<SubComentarioResponseDTO> getSubComentarioById(@PathVariable Long id){
 		return ResponseEntity.status(HttpStatus.OK).body(subComentarioService.buscarSubComentarioPorId(id));
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping
 	@Operation(summary = "Criar sub-comentário", description = "Cria um novo sub-comentário com base nos dados fornecidos.")
 	public ResponseEntity<SubComentarioResponseDTO> saveSubComentario(@Validated @RequestBody SubComentarioRequestDTO subComentarioRequestDTO){
@@ -50,6 +55,7 @@ public class SubComentarioController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(subComentarioResponseDTO);
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@PutMapping("/{id}")
 	@Operation(summary = "Atualizar sub-comentário", description = "Atualiza um sub-comentário existente com base nos dados fornecidos.")
 	public ResponseEntity<SubComentarioResponseDTO> updateSubComentario(@PathVariable Long id, @Validated @RequestBody SubComentarioRequestDTO subComentarioRequestDTO){
@@ -57,6 +63,7 @@ public class SubComentarioController {
 		return ResponseEntity.status(HttpStatus.OK).body(subComentarioResponseDTO);
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/{id}")
 	@Operation(summary = "Deletar sub-comentário", description = "Deleta um sub-comentário existente com base no ID fornecido.")
 	public ResponseEntity<Void> deleteSubComentario(@PathVariable Long id){

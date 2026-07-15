@@ -18,8 +18,10 @@ import com.pitcherx.dto.postagem.PostagemResponseDTO;
 import com.pitcherx.service.PostagemService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 @RestController
+@PreAuthorize("hasRole('ADMIN')")
 @RequestMapping("/postagem")
 @Tag(name = "Postagem", description = "Endpoints para gerenciamento de postagens.")
 public class PostagemController {
@@ -30,28 +32,33 @@ public class PostagemController {
 		this.postagemService = postagemService;
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping
 	public ResponseEntity<List<PostagemResponseDTO>> getPostagens(){
 		return ResponseEntity.status(HttpStatus.OK).body(postagemService.listarPostagens());
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/{id}")
 	public ResponseEntity<PostagemResponseDTO> getPostagemById(@PathVariable Long id){
 		return ResponseEntity.status(HttpStatus.OK).body(postagemService.buscarPostagemPorId(id));
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping
 	public ResponseEntity<PostagemResponseDTO> savePostagem(@RequestBody PostagemRequestDTO postagemRequestDTO){
 		PostagemResponseDTO postagemResponseDTO = postagemService.criarPostagem(postagemRequestDTO);
 		return ResponseEntity.status(HttpStatus.CREATED).body(postagemResponseDTO);
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@PutMapping("/{id}")
 	public ResponseEntity<PostagemResponseDTO> updatePostagem(@PathVariable Long id, @RequestBody PostagemRequestDTO postagemRequestDTO){
 		PostagemResponseDTO postagemResponseDTO = postagemService.atualizarPostagem(id, postagemRequestDTO);
 		return ResponseEntity.status(HttpStatus.OK).body(postagemResponseDTO);
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> deletePostagemById(@PathVariable Long id){
 		postagemService.deletarPostagem(id);

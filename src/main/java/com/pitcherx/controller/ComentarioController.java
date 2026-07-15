@@ -19,8 +19,10 @@ import com.pitcherx.dto.comentario.ComentarioResponseDTO;
 import com.pitcherx.service.ComentarioService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 @RestController
+@PreAuthorize("hasRole('ADMIN')")
 @RequestMapping("/comentario")
 @Tag(name = "Comentario", description = "Endpoints para gerenciamento de comentarios.")
 public class ComentarioController {
@@ -31,28 +33,33 @@ public class ComentarioController {
 		this.comentarioService = comentarioService;
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping
 	public ResponseEntity<List<ComentarioResponseDTO>> getComentarios(){
 		return ResponseEntity.status(HttpStatus.OK).body(comentarioService.listarComentarios());
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/{id}")
 	public ResponseEntity<ComentarioResponseDTO> getComentarioById(@PathVariable Long id){
 		return ResponseEntity.status(HttpStatus.OK).body(comentarioService.buscarComentarioPorId(id));
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping
 	public ResponseEntity<ComentarioResponseDTO> saveComentario(@Validated @RequestBody ComentarioRequestDTO comentarioRequestDTO){
 		ComentarioResponseDTO comentarioResponseDTO = comentarioService.criarComentario(comentarioRequestDTO);
 		return ResponseEntity.status(HttpStatus.CREATED).body(comentarioResponseDTO);
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@PutMapping("/{id}")
 	public ResponseEntity<ComentarioResponseDTO> updateComentario(@PathVariable Long id, @Validated @RequestBody ComentarioRequestDTO comentarioRequestDTO){
 		ComentarioResponseDTO comentarioResponseDTO = comentarioService.atualizarComentario(id, comentarioRequestDTO);
 		return ResponseEntity.status(HttpStatus.OK).body(comentarioResponseDTO);
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> deleteComentario(@PathVariable Long id){
 		comentarioService.deletarComentario(id);

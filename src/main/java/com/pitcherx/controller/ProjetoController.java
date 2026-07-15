@@ -23,6 +23,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
+@PreAuthorize("hasRole('ADMIN')")
 @RequestMapping("/projeto")
 @Tag(name = "Projeto", description = "Endpoints para gerenciamento de projetos")
 public class ProjetoController {
@@ -33,6 +34,7 @@ public class ProjetoController {
 		this.projetoService = projetoService;
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping
 	@PreAuthorize("permitAll()")
     @Operation(description = "Endpoint para listar os projetos publicados")
@@ -40,6 +42,7 @@ public class ProjetoController {
 		return ResponseEntity.status(HttpStatus.OK).body(projetoService.listarProjetos());
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/{id}")
 	@PreAuthorize("permitAll()")
     @Operation(description = "Endpoint para obter um projeto específico por ID")
@@ -47,6 +50,7 @@ public class ProjetoController {
 		return ResponseEntity.status(HttpStatus.OK).body(projetoService.buscarProjetoPorId(id));
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping
 	@PreAuthorize("permitAll()")
     @Operation(description = "Endpoint para criar um novo projeto")
@@ -55,6 +59,7 @@ public class ProjetoController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(projetoResponseDTO);
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@PutMapping("/{id}")
 	@PreAuthorize("hasAnyRole('ADMIN', 'USUARIO', 'EMPRESA')")
     @Operation(description = "Endpoint para atualizar um projeto")
@@ -63,6 +68,7 @@ public class ProjetoController {
 		return ResponseEntity.status(HttpStatus.OK).body(projetoResponseDTO);
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/{id}")
 	@PreAuthorize("hasAnyRole('ADMIN', 'USUARIO', 'EMPRESA')")
 	@Operation(description = "Endpoint para deletar um projeto")

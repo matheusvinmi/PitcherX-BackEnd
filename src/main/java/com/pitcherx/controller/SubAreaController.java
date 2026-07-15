@@ -10,8 +10,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 @RestController
+@PreAuthorize("hasRole('ADMIN')")
 @RequestMapping("/subarea")
 @Tag(name = "SubÁrea", description = "Endpoints para gerenciamento de subáreas.")
 public class SubAreaController {
@@ -22,12 +24,14 @@ public class SubAreaController {
         this.subAreaService = subAreaService;
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     @Operation(description = "Este endpoint faz a listagem de todas as subáreas.")
     public ResponseEntity<List<SubAreaResponseDTO>> getSubAreas() {
         return ResponseEntity.status(HttpStatus.OK).body(subAreaService.listarSubAreas());
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     @Operation(description = "Este endpoint faz a busca de subárea através do ID.")
     public ResponseEntity<SubAreaResponseDTO> getSubAreaById(@PathVariable Long id) {
@@ -35,6 +39,7 @@ public class SubAreaController {
         return ResponseEntity.status(HttpStatus.OK).body(subAreaResponseDTO);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     @Operation(description = "Este endpoint faz o cadastro de subárea.")
     public ResponseEntity<SubAreaResponseDTO> createSubArea(@RequestBody SubAreaRequestDTO subAreaRequestDTO) {
@@ -42,6 +47,7 @@ public class SubAreaController {
         return ResponseEntity.status(HttpStatus.CREATED).body(subAreaResponseDTO);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     @Operation(description = "Este endpoint faz a atualização de subárea através do ID.")
     public ResponseEntity<SubAreaResponseDTO> updateSubArea(@PathVariable Long id, SubAreaRequestDTO subAreaRequestDTO){
@@ -49,6 +55,7 @@ public class SubAreaController {
         return ResponseEntity.status(HttpStatus.OK).body(subAreaResponseDTO);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     @Operation(description = "Este endpoint faz a remoção de subárea através do ID.")
     public ResponseEntity<Void> deleteSubArea(@PathVariable Long id) {

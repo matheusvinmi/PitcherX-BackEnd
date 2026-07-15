@@ -15,6 +15,7 @@ import com.pitcherx.dto.perfilUsuario.PerfilUsuarioResponseDTO;
 import com.pitcherx.service.PerfilUsuarioService;
 
 @RestController
+@PreAuthorize("hasRole('ADMIN')")
 @RequestMapping("/perfil-usuario")
 @Tag(name = "Perfil de usuário", description = "Endpoints para gerenciamento de pefil de usuario.")
 public class PerfilUsuarioController {
@@ -25,18 +26,21 @@ public class PerfilUsuarioController {
 		this.perfilUsuarioService = perfilUsuarioService;
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping
 	@Operation(summary = "Listar Perfis de usuário", description = "Este endpoint faz a listagem de todos os perfis de usuario.")
 	public ResponseEntity<List<PerfilUsuarioResponseDTO>> getPerfilUsuario(){
 		return ResponseEntity.status(HttpStatus.OK).body(perfilUsuarioService.listarPerfilsUsuario());
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/{id}")
 	@Operation(description = "Este endpoint faz a busca de perfil de usuario através do ID.")
 	public ResponseEntity<PerfilUsuarioResponseDTO> getPerfilUsuarioById(@PathVariable Long id){
 		return ResponseEntity.status(HttpStatus.OK).body(perfilUsuarioService.buscarPerfilUsuarioPorId(id));
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping
 	@PreAuthorize("hasAnyRole('ADMIN', 'USUARIO')")
 	@Operation(description = "Este endpoint faz o cadastro de perfil de usuario.")
@@ -45,6 +49,7 @@ public class PerfilUsuarioController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(perfilUsuarioResponseDTO);
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@PutMapping("/{id}")
 	@PreAuthorize("hasAnyRole('ADMIN', 'USUARIO')")
 	@Operation(description = "Este endpoint faz a atualização de perfil de usuario através do ID.")
@@ -53,6 +58,7 @@ public class PerfilUsuarioController {
 		return ResponseEntity.status(HttpStatus.OK).body(perfilUsuarioResponseDTO);
 	}
 
+	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/{id}")
 	@PreAuthorize("hasAnyRole('ADMIN', 'USER')")
 	@Operation(description = "Este endpoint faz a remoção de perfil de usuario através do ID.")
