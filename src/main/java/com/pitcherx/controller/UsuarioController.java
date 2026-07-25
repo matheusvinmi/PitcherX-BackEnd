@@ -1,11 +1,13 @@
     package com.pitcherx.controller;
 
-    import com.pitcherx.dto.usuario.RedefinirSenhaRequestDTO;
-    import com.pitcherx.dto.usuario.UsuarioRequestDTO;
+    import com.pitcherx.dto.usuario.*;
 
-    import com.pitcherx.dto.usuario.UsuarioResponseDTO;
+    import com.pitcherx.dto.usuario.esqueciSenha.EsqueciSenhaRequestDTO;
+    import com.pitcherx.dto.usuario.esqueciSenha.ResetarSenhaRequestDTO;
+    import com.pitcherx.dto.usuario.esqueciSenha.ValidarTokenRequestDTO;
     import com.pitcherx.dto.usuario.login.LoginRequestDTO;
     import com.pitcherx.dto.usuario.login.LoginResponseDTO;
+    import com.pitcherx.service.SenhaResetService;
     import com.pitcherx.service.UsuarioService;
     import io.swagger.v3.oas.annotations.Operation;
     import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,9 +25,11 @@
     public class UsuarioController {
 
         private final UsuarioService usuarioService;
+        private final SenhaResetService senhaResetService;
 
-        public UsuarioController(UsuarioService usuarioService) {
+        public UsuarioController(UsuarioService usuarioService, SenhaResetService senhaResetService) {
             this.usuarioService = usuarioService;
+            this.senhaResetService = senhaResetService;
         }
 
         @GetMapping
@@ -85,6 +89,27 @@
         public ResponseEntity<UsuarioResponseDTO> redefinirSenha(@PathVariable Long id, @Validated @RequestBody RedefinirSenhaRequestDTO redefinirSenhaRequestDTO) {
             UsuarioResponseDTO usuarioResponseDTO = usuarioService.redefinirSenha(id, redefinirSenhaRequestDTO);
             return ResponseEntity.status(HttpStatus.OK).body(usuarioResponseDTO);
+        }
+
+        @PostMapping("/esqueci-senha")
+        @Operation(description = "Este endpoint permite que o usuário solicite a redefinição de senha.")
+        public ResponseEntity<Void> esqueciSenha(@Validated @RequestBody EsqueciSenhaRequestDTO esqueciSenhaRequestDTO) {
+            senhaResetService.solicitarRedefinicaoSenha(esqueciSenhaRequestDTO.usuarioEmail());
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
+
+        @PostMapping("/validar-token")
+        @Operation(description = "Este endpoint permite que o usuário valide o token de redefinição de senha.")
+        public ResponseEntity<Void> validarToken(@Validated @RequestBody ValidarTokenRequestDTO validarTokenRequestDTO) {
+            senhaResetService.validarToken(validarTokenRequestDTO.emailUsuario(), validarTokenRequestDTO.codigoRedefinicao());
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
+
+        @PostMapping("/resetar-senha")
+        @Operation(description = "Este endpoint permite que o usuário redefina a senha.")
+        public ResponseEntity<Void> resetarSenha(@Validated @RequestBody ResetarSenhaRequestDTO resetarSenhaRequestDTO) {
+            senhaResetService.resetarSenha(resetarSenhaRequestDTO.emailUsuario(), resetarSenhaRequestDTO.codigoRedefinicao(), resetarSenhaRequestDTO.novaSenha());
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }
 
     }

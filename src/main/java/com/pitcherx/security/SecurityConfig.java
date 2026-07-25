@@ -38,6 +38,9 @@ public class SecurityConfig {
                         .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll()
                         .requestMatchers("/usuario/login",
                                 "/usuario/cadastro-usuario",
+                                "/usuario/esqueci-senha",
+                                "/usuario/validar-token",
+                                "/usuario/resetar-senha",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**"
                         ).permitAll()
