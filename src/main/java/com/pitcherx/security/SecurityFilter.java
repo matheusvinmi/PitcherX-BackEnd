@@ -1,5 +1,8 @@
 package com.pitcherx.security;
 
+import com.pitcherx.model.Usuario;
+import com.pitcherx.repository.UsuarioRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,8 +23,10 @@ import java.util.stream.Collectors;
 public class SecurityFilter extends OncePerRequestFilter {
 
     private final TokenConfig tokenConfig;
+    private final UsuarioRepository usuarioRepository;
 
-    public SecurityFilter(TokenConfig tokenConfig) {
+    public SecurityFilter(TokenConfig tokenConfig, UsuarioRepository usuarioRepository) {
+        this.usuarioRepository = usuarioRepository;
         this.tokenConfig = tokenConfig;
     }
 
@@ -35,13 +40,16 @@ public class SecurityFilter extends OncePerRequestFilter {
             if (userDataOpt.isPresent()) {
                 JWTUserData userData = userDataOpt.get();
 
+                Usuario usuario = usuarioRepository.findUserByEmailUsuario(userData.emailUsuario())
+                        .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado!"));
+
                 Set<SimpleGrantedAuthority> authorities = Optional.ofNullable(userData.roles())
                         .orElse(Collections.emptySet())
                         .stream()
                         .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getNomeRole().name()))
                         .collect(Collectors.toSet());
 
-                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userData.emailUsuario(), null, authorities);
+                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(usuario, null, authorities);
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }
         }

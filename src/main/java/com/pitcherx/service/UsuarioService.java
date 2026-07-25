@@ -1,5 +1,6 @@
 package com.pitcherx.service;
 
+import com.pitcherx.dto.usuario.RedefinirSenhaRequestDTO;
 import com.pitcherx.dto.usuario.UsuarioRequestDTO;
 import com.pitcherx.dto.usuario.UsuarioResponseDTO;
 import com.pitcherx.dto.usuario.login.LoginRequestDTO;
@@ -16,6 +17,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -121,9 +123,21 @@ public class UsuarioService {
 
      @Transactional
     public LoginResponseDTO login(LoginRequestDTO loginRequestDTO){
-         UsernamePasswordAuthenticationToken userAndPass = new UsernamePasswordAuthenticationToken(loginRequestDTO.emailUsuario(), loginRequestDTO.senhaUsuario());
-         Authentication authentication = authenticationManager.authenticate(userAndPass);
-         Usuario usuario = (Usuario) authentication.getPrincipal();
+        Usuario usuario = usuarioRepository.findUserByEmailUsuario(loginRequestDTO.emailUsuario())
+                .orElseThrow(() -> new EntityNotFoundException("Sem usuário com o email informado!"));
+
+         if (!passwordEncoder.matches(loginRequestDTO.senhaUsuario(), usuario.getSenhaUsuario())) {
+             throw new IllegalArgumentException("Credenciais incorretas!");
+         }
+         UsernamePasswordAuthenticationToken authenticationToken =
+                 new UsernamePasswordAuthenticationToken(
+                         usuario,
+                         null,
+                         usuario.getAuthorities()
+                 );
+
+         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+
          String token = tokenConfig.generateToken(usuario);
 
          return new LoginResponseDTO(
@@ -134,6 +148,21 @@ public class UsuarioService {
                  token,
                  usuario.getRoles()
          );
+     }
+
+     @Transactional
+    public UsuarioResponseDTO redefinirSenha(Long idUsuario, RedefinirSenhaRequestDTO redefinirSenhaRequestDTO) {
+        Usuario usuario = usuarioRepository.findById(idUsuario).orElseThrow(() -> new EntityNotFoundException("Sem usuário com o ID informado!"));
+
+        if (!passwordEncoder.matches(redefinirSenhaRequestDTO.senhaAtual(), usuario.getSenhaUsuario())) {
+            throw new IllegalArgumentException("A senha atual está incorreta!");
+        }
+
+        String novaSenhaHash = passwordEncoder.encode(redefinirSenhaRequestDTO.novaSenha());
+        usuario.setSenhaUsuario(novaSenhaHash);
+
+        Usuario salvo = usuarioRepository.save(usuario);
+        return usuarioMapper.toDTO(salvo);
      }
 
 }
