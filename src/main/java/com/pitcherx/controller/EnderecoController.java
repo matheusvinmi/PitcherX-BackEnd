@@ -3,10 +3,9 @@ package com.pitcherx.controller;
 import java.util.List;
 
 
-
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -48,14 +47,14 @@ public class EnderecoController {
 	
 	@PostMapping
     @Operation(summary = "Cadastro de endereço", description = "Este endpoint faz o cadastro de endereço.")
-	public ResponseEntity<EnderecoResponseDTO> createEndereco(@Validated @RequestBody EnderecoRequestDTO enderecoRequestDTO){
+	public ResponseEntity<EnderecoResponseDTO> createEndereco(@Valid @RequestBody EnderecoRequestDTO enderecoRequestDTO){
 		EnderecoResponseDTO enderecoResponseDTO = enderecoService.criarEndereco(enderecoRequestDTO);
 		return ResponseEntity.status(HttpStatus.CREATED).body(enderecoResponseDTO);
 	}
 	
 	@PutMapping("/{id}")
     @Operation(summary = "Atualização de endereço", description = "Este endpoint faz a atualização de endereço através do ID.")
-	public ResponseEntity<EnderecoResponseDTO> updateEndereco(@PathVariable Long id, @Validated @RequestBody EnderecoRequestDTO enderecoRequestDTO){
+	public ResponseEntity<EnderecoResponseDTO> updateEndereco(@PathVariable Long id, @Valid @RequestBody EnderecoRequestDTO enderecoRequestDTO){
 		EnderecoResponseDTO enderecoResponseDTO = enderecoService.atualizarEndereco(id, enderecoRequestDTO);
 		return ResponseEntity.status(HttpStatus.OK).body(enderecoResponseDTO);
 	}

@@ -2,6 +2,7 @@ package com.pitcherx.controller;
 
 import java.util.List;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -41,13 +42,13 @@ public class PostagemController {
 	}
 	
 	@PostMapping
-	public ResponseEntity<PostagemResponseDTO> savePostagem(@RequestBody PostagemRequestDTO postagemRequestDTO){
+	public ResponseEntity<PostagemResponseDTO> savePostagem(@Valid @RequestBody PostagemRequestDTO postagemRequestDTO){
 		PostagemResponseDTO postagemResponseDTO = postagemService.criarPostagem(postagemRequestDTO);
 		return ResponseEntity.status(HttpStatus.CREATED).body(postagemResponseDTO);
 	}
 	
 	@PutMapping("/{id}")
-	public ResponseEntity<PostagemResponseDTO> updatePostagem(@PathVariable Long id, @RequestBody PostagemRequestDTO postagemRequestDTO){
+	public ResponseEntity<PostagemResponseDTO> updatePostagem(@PathVariable Long id, @Valid @RequestBody PostagemRequestDTO postagemRequestDTO){
 		PostagemResponseDTO postagemResponseDTO = postagemService.atualizarPostagem(id, postagemRequestDTO);
 		return ResponseEntity.status(HttpStatus.OK).body(postagemResponseDTO);
 	}

@@ -11,10 +11,10 @@
     import com.pitcherx.service.UsuarioService;
     import io.swagger.v3.oas.annotations.Operation;
     import io.swagger.v3.oas.annotations.tags.Tag;
+    import jakarta.validation.Valid;
     import org.springframework.http.HttpStatus;
     import org.springframework.http.ResponseEntity;
     import org.springframework.security.access.prepost.PreAuthorize;
-    import org.springframework.validation.annotation.Validated;
     import org.springframework.web.bind.annotation.*;
 
     import java.util.List;
@@ -48,7 +48,7 @@
 
         @PostMapping("/cadastro-usuario")
         @Operation(description = "Este endpoint faz o cadastro de usuário.")
-        public ResponseEntity<UsuarioResponseDTO> saveUsuario(@Validated @RequestBody UsuarioRequestDTO usuarioRequestDTO) {
+        public ResponseEntity<UsuarioResponseDTO> saveUsuario(@Valid @RequestBody UsuarioRequestDTO usuarioRequestDTO) {
             UsuarioResponseDTO usuarioResponseDTO = usuarioService.criarUsuario(usuarioRequestDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(usuarioResponseDTO);
         }
@@ -56,7 +56,7 @@
         @PutMapping("/{id}")
         @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.idUsuario")
         @Operation(description = "Este endpoint faz a atualização de usuário através do ID.")
-        public ResponseEntity<UsuarioResponseDTO> updateUsuario(@PathVariable Long id, @Validated @RequestBody UsuarioRequestDTO usuarioRequestDTO) {
+        public ResponseEntity<UsuarioResponseDTO> updateUsuario(@PathVariable Long id, @Valid @RequestBody UsuarioRequestDTO usuarioRequestDTO) {
             UsuarioResponseDTO usuarioResponseDTO = usuarioService.atualizarUsuario(id, usuarioRequestDTO);
             return ResponseEntity.status(HttpStatus.OK).body(usuarioResponseDTO);
         }
@@ -78,7 +78,7 @@
 
         @PostMapping("/login")
         @Operation(description = "Este endpoint faz o login de usuário.")
-        public ResponseEntity<LoginResponseDTO> login(@Validated @RequestBody LoginRequestDTO loginRequestDTO) {
+        public ResponseEntity<LoginResponseDTO> login(@Valid @RequestBody LoginRequestDTO loginRequestDTO) {
             LoginResponseDTO loginResponseDTO = usuarioService.login(loginRequestDTO);
             return ResponseEntity.status(HttpStatus.OK).body(loginResponseDTO);
         }
@@ -86,28 +86,28 @@
         @PostMapping("/redefinir-senha/{id}")
         @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.idUsuario")
         @Operation(description = "Este endpoint faz a redefinição de senha de usuário.")
-        public ResponseEntity<UsuarioResponseDTO> redefinirSenha(@PathVariable Long id, @Validated @RequestBody RedefinirSenhaRequestDTO redefinirSenhaRequestDTO) {
+        public ResponseEntity<UsuarioResponseDTO> redefinirSenha(@PathVariable Long id, @Valid @RequestBody RedefinirSenhaRequestDTO redefinirSenhaRequestDTO) {
             UsuarioResponseDTO usuarioResponseDTO = usuarioService.redefinirSenha(id, redefinirSenhaRequestDTO);
             return ResponseEntity.status(HttpStatus.OK).body(usuarioResponseDTO);
         }
 
         @PostMapping("/esqueci-senha")
         @Operation(description = "Este endpoint permite que o usuário solicite a redefinição de senha.")
-        public ResponseEntity<Void> esqueciSenha(@Validated @RequestBody EsqueciSenhaRequestDTO esqueciSenhaRequestDTO) {
+        public ResponseEntity<Void> esqueciSenha(@Valid @RequestBody EsqueciSenhaRequestDTO esqueciSenhaRequestDTO) {
             senhaResetService.solicitarRedefinicaoSenha(esqueciSenhaRequestDTO.usuarioEmail());
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }
 
         @PostMapping("/validar-token")
         @Operation(description = "Este endpoint permite que o usuário valide o token de redefinição de senha.")
-        public ResponseEntity<Void> validarToken(@Validated @RequestBody ValidarTokenRequestDTO validarTokenRequestDTO) {
+        public ResponseEntity<Void> validarToken(@Valid @RequestBody ValidarTokenRequestDTO validarTokenRequestDTO) {
             senhaResetService.validarToken(validarTokenRequestDTO.emailUsuario(), validarTokenRequestDTO.codigoRedefinicao());
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }
 
         @PostMapping("/resetar-senha")
         @Operation(description = "Este endpoint permite que o usuário redefina a senha.")
-        public ResponseEntity<Void> resetarSenha(@Validated @RequestBody ResetarSenhaRequestDTO resetarSenhaRequestDTO) {
+        public ResponseEntity<Void> resetarSenha(@Valid @RequestBody ResetarSenhaRequestDTO resetarSenhaRequestDTO) {
             senhaResetService.resetarSenha(resetarSenhaRequestDTO.emailUsuario(), resetarSenhaRequestDTO.codigoRedefinicao(), resetarSenhaRequestDTO.novaSenha());
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }

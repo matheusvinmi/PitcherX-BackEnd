@@ -4,6 +4,7 @@ import java.util.List;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -45,14 +46,14 @@ public class SubComentarioController {
 	
 	@PostMapping
 	@Operation(summary = "Criar sub-comentário", description = "Cria um novo sub-comentário com base nos dados fornecidos.")
-	public ResponseEntity<SubComentarioResponseDTO> saveSubComentario(@Validated @RequestBody SubComentarioRequestDTO subComentarioRequestDTO){
+	public ResponseEntity<SubComentarioResponseDTO> saveSubComentario(@Valid @RequestBody SubComentarioRequestDTO subComentarioRequestDTO){
 		SubComentarioResponseDTO subComentarioResponseDTO = subComentarioService.criarSubComentario(subComentarioRequestDTO);
 		return ResponseEntity.status(HttpStatus.CREATED).body(subComentarioResponseDTO);
 	}
 	
 	@PutMapping("/{id}")
 	@Operation(summary = "Atualizar sub-comentário", description = "Atualiza um sub-comentário existente com base nos dados fornecidos.")
-	public ResponseEntity<SubComentarioResponseDTO> updateSubComentario(@PathVariable Long id, @Validated @RequestBody SubComentarioRequestDTO subComentarioRequestDTO){
+	public ResponseEntity<SubComentarioResponseDTO> updateSubComentario(@PathVariable Long id, @Valid @RequestBody SubComentarioRequestDTO subComentarioRequestDTO){
 		SubComentarioResponseDTO subComentarioResponseDTO = subComentarioService.atualizarSubComentario(id, subComentarioRequestDTO);
 		return ResponseEntity.status(HttpStatus.OK).body(subComentarioResponseDTO);
 	}

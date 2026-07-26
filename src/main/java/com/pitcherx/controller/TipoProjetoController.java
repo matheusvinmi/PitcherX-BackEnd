@@ -5,9 +5,9 @@ import com.pitcherx.dto.tipoProjeto.TipoProjetoResponseDTO;
 import com.pitcherx.service.TipoProjetoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,20 +31,20 @@ public class TipoProjetoController {
 
     @GetMapping("/{id}")
     @Operation(description = "Endpoint para obter um tipo de projeto específico por ID")
-    public ResponseEntity<TipoProjetoResponseDTO> getTipoProjetoById(Long id) {
+    public ResponseEntity<TipoProjetoResponseDTO> getTipoProjetoById(@PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(tipoProjetoService.buscarTipoProjetoPorId(id));
     }
 
     @PostMapping
     @Operation(description = "Endpoint para criar um novo tipo de projeto")
-    public ResponseEntity<TipoProjetoResponseDTO> createTipoProjeto(@Validated @RequestBody TipoProjetoRequestDTO tipoProjetoRequestDTO) {
+    public ResponseEntity<TipoProjetoResponseDTO> createTipoProjeto(@Valid @RequestBody TipoProjetoRequestDTO tipoProjetoRequestDTO) {
         TipoProjetoResponseDTO tipoProjetoResponseDTO = tipoProjetoService.criarTipoProjeto(tipoProjetoRequestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(tipoProjetoResponseDTO);
     }
 
     @PutMapping("/{id}")
     @Operation(description = "Endpoint para atualizar um tipo de projeto existente")
-    public ResponseEntity<TipoProjetoResponseDTO> updateTipoProjeto(@PathVariable Long id, @Validated @RequestBody TipoProjetoRequestDTO tipoProjetoRequestDTO) {
+    public ResponseEntity<TipoProjetoResponseDTO> updateTipoProjeto(@PathVariable Long id, @Valid @RequestBody TipoProjetoRequestDTO tipoProjetoRequestDTO) {
         TipoProjetoResponseDTO tipoProjetoResponseDTO = tipoProjetoService.atualizarTipoProjeto(id, tipoProjetoRequestDTO);
         return ResponseEntity.status(HttpStatus.OK).body(tipoProjetoResponseDTO);
     }

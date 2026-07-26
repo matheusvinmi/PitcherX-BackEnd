@@ -4,9 +4,9 @@ import java.util.List;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -45,14 +45,14 @@ public class ContraPropostaController {
 	
 	@PostMapping
 	@Operation(summary = "Criar Contra Proposta", description = "Cria uma nova contra proposta com base nos dados fornecidos")
-	public ResponseEntity<ContraPropostaResponseDTO> saveContraProposta(@Validated @RequestBody ContraPropostaRequestDTO contraPropostaRequestDTO){
+	public ResponseEntity<ContraPropostaResponseDTO> saveContraProposta(@Valid @RequestBody ContraPropostaRequestDTO contraPropostaRequestDTO){
 		ContraPropostaResponseDTO contraPropostaResponseDTO = contraPropostaService.criarContraProposta(contraPropostaRequestDTO);
 		return ResponseEntity.status(HttpStatus.CREATED).body(contraPropostaResponseDTO);
 	}
 	
 	@PutMapping("/{id}")
 	@Operation(summary = "Atualizar Contra Proposta", description = "Atualiza uma contra proposta existente com base no ID fornecido e nos dados fornecidos")
-	public ResponseEntity<ContraPropostaResponseDTO> updateContraProposta(@PathVariable Long id, @Validated @RequestBody ContraPropostaRequestDTO contraPropostaRequestDTO){
+	public ResponseEntity<ContraPropostaResponseDTO> updateContraProposta(@PathVariable Long id, @Valid @RequestBody ContraPropostaRequestDTO contraPropostaRequestDTO){
 		ContraPropostaResponseDTO contraPropostaResponseDTO = contraPropostaService.atualizarContraProposta(id, contraPropostaRequestDTO);
 		return ResponseEntity.status(HttpStatus.OK).body(contraPropostaResponseDTO);
 	}

@@ -5,6 +5,7 @@ import com.pitcherx.dto.termoPostagem.TermoPostagemResponseDTO;
 import com.pitcherx.service.TermoPostagemService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -37,14 +38,14 @@ public class TermoPostagemController {
 
     @PostMapping
     @Operation(description = "Endpoint para criar um novo termo de postagem.")
-    public ResponseEntity<TermoPostagemResponseDTO> criarTermoPostagem(@Validated @RequestBody TermoPostagemRequestDTO termoPostagemRequestDTO){
+    public ResponseEntity<TermoPostagemResponseDTO> criarTermoPostagem(@Valid @RequestBody TermoPostagemRequestDTO termoPostagemRequestDTO){
         TermoPostagemResponseDTO termoPostagemResponseDTO = termoPostagemService.criarTermoPostagem(termoPostagemRequestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(termoPostagemResponseDTO);
     }
 
     @PutMapping("/{id}")
     @Operation(description = "Endpoint para atualizar um termo de postagem existente por ID.")
-    public ResponseEntity<TermoPostagemResponseDTO> atualizarTermoPostagem(@PathVariable Long id, @Validated @RequestBody TermoPostagemRequestDTO termoPostagemRequestDTO){
+    public ResponseEntity<TermoPostagemResponseDTO> atualizarTermoPostagem(@PathVariable Long id, @Valid @RequestBody TermoPostagemRequestDTO termoPostagemRequestDTO){
         TermoPostagemResponseDTO termoPostagemResponseDTO = termoPostagemService.atualizarTermoPostagem(id, termoPostagemRequestDTO);
         return ResponseEntity.status(HttpStatus.OK).body(termoPostagemResponseDTO);
     }

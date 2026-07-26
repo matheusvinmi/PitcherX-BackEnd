@@ -5,10 +5,10 @@ import com.pitcherx.dto.termo.TermoResponseDTO;
 import com.pitcherx.service.TermoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -41,7 +41,7 @@ public class TermoController {
     @PostMapping
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @Operation(summary = "Criar novo termo", description = "Cria um novo termo com base nos dados fornecidos")
-    public ResponseEntity<TermoResponseDTO> createTermo(@Validated @RequestBody TermoRequestDTO termoRequestDTO){
+    public ResponseEntity<TermoResponseDTO> createTermo(@Valid @RequestBody TermoRequestDTO termoRequestDTO){
         TermoResponseDTO termoResponseDTO = termoService.criarTermo(termoRequestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(termoResponseDTO);
     }
@@ -49,7 +49,7 @@ public class TermoController {
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @Operation(summary = "Atualizar termo existente", description = "Atualiza um termo existente com base no ID fornecido e nos dados fornecidos")
-    public ResponseEntity<TermoResponseDTO> updateTermo(@PathVariable Long id, @Validated @RequestBody TermoRequestDTO termoRequestDTO){
+    public ResponseEntity<TermoResponseDTO> updateTermo(@PathVariable Long id, @Valid @RequestBody TermoRequestDTO termoRequestDTO){
         TermoResponseDTO termoResponseDTO = termoService.atualizarTermo(id, termoRequestDTO);
         return ResponseEntity.status(HttpStatus.OK).body(termoResponseDTO);
     }

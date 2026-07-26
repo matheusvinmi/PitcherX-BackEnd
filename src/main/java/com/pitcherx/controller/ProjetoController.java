@@ -2,10 +2,10 @@ package com.pitcherx.controller;
 
 import java.util.List;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -50,7 +50,7 @@ public class ProjetoController {
 	@PostMapping
 	@PreAuthorize("permitAll()")
     @Operation(description = "Endpoint para criar um novo projeto")
-	public ResponseEntity<ProjetoResponseDTO> createProjeto(@Validated @RequestBody ProjetoRequestDTO projetoRequestDTO){
+	public ResponseEntity<ProjetoResponseDTO> createProjeto(@Valid @RequestBody ProjetoRequestDTO projetoRequestDTO){
 		ProjetoResponseDTO projetoResponseDTO = projetoService.criarProjeto(projetoRequestDTO);
 		return ResponseEntity.status(HttpStatus.CREATED).body(projetoResponseDTO);
 	}
@@ -58,7 +58,7 @@ public class ProjetoController {
 	@PutMapping("/{id}")
 	@PreAuthorize("hasAnyRole('ADMIN', 'USUARIO', 'EMPRESA')")
     @Operation(description = "Endpoint para atualizar um projeto")
-	public ResponseEntity<ProjetoResponseDTO> updateProjeto(@PathVariable Long id, @Validated @RequestBody ProjetoRequestDTO projetoRequestDTO){
+	public ResponseEntity<ProjetoResponseDTO> updateProjeto(@PathVariable Long id, @Valid @RequestBody ProjetoRequestDTO projetoRequestDTO){
 		ProjetoResponseDTO projetoResponseDTO = projetoService.atualizarProjeto(id, projetoRequestDTO);
 		return ResponseEntity.status(HttpStatus.OK).body(projetoResponseDTO);
 	}

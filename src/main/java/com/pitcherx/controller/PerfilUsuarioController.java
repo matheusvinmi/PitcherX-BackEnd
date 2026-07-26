@@ -4,10 +4,10 @@ import java.util.List;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import com.pitcherx.dto.perfilUsuario.PerfilUsuarioRequestDTO;
@@ -40,7 +40,7 @@ public class PerfilUsuarioController {
 	@PostMapping
 	@PreAuthorize("hasAnyRole('ADMIN', 'USUARIO')")
 	@Operation(description = "Este endpoint faz o cadastro de perfil de usuario.")
-	public ResponseEntity<PerfilUsuarioResponseDTO> savePerfilUsuario(@Validated @RequestBody PerfilUsuarioRequestDTO perfilUsuarioRequestDTO){
+	public ResponseEntity<PerfilUsuarioResponseDTO> savePerfilUsuario(@Valid @RequestBody PerfilUsuarioRequestDTO perfilUsuarioRequestDTO){
 		PerfilUsuarioResponseDTO perfilUsuarioResponseDTO = perfilUsuarioService.criarPerfilUsuario(perfilUsuarioRequestDTO);
 		return ResponseEntity.status(HttpStatus.CREATED).body(perfilUsuarioResponseDTO);
 	}
@@ -48,7 +48,7 @@ public class PerfilUsuarioController {
 	@PutMapping("/{id}")
 	@PreAuthorize("hasAnyRole('ADMIN', 'USUARIO')")
 	@Operation(description = "Este endpoint faz a atualização de perfil de usuario através do ID.")
-	public ResponseEntity<PerfilUsuarioResponseDTO> updatePerfilUsuario(@PathVariable Long id, @Validated @RequestBody PerfilUsuarioRequestDTO perfilUsuarioRequestDTO){
+	public ResponseEntity<PerfilUsuarioResponseDTO> updatePerfilUsuario(@PathVariable Long id, @Valid @RequestBody PerfilUsuarioRequestDTO perfilUsuarioRequestDTO){
 		PerfilUsuarioResponseDTO perfilUsuarioResponseDTO = perfilUsuarioService.atualizarPerfilUsuario(id, perfilUsuarioRequestDTO);
 		return ResponseEntity.status(HttpStatus.OK).body(perfilUsuarioResponseDTO);
 	}

@@ -5,6 +5,7 @@ import com.pitcherx.dto.termoVinculo.TermoVinculoResponseDTO;
 import com.pitcherx.service.TermoVinculoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -37,14 +38,14 @@ public class TermoVinculoController {
 
     @PostMapping
     @Operation(description = "Este endpoint é responsável por criar um novo termo de vínculo.")
-    public ResponseEntity<TermoVinculoResponseDTO> criarTermoVinculo(@Validated @RequestBody TermoVinculoRequestDTO termoVinculoRequestDTO){
+    public ResponseEntity<TermoVinculoResponseDTO> criarTermoVinculo(@Valid @RequestBody TermoVinculoRequestDTO termoVinculoRequestDTO){
         TermoVinculoResponseDTO termoVinculoResponseDTO = termoVinculoService.criarTermoVinculo(termoVinculoRequestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(termoVinculoResponseDTO);
     }
 
     @PutMapping("/{id}")
     @Operation(description = "Este endpoint é responsável por atualizar um termo de vínculo existente por ID.")
-    public ResponseEntity<TermoVinculoResponseDTO> atualizarTermoVinculo(@PathVariable Long id, @Validated @RequestBody TermoVinculoRequestDTO termoVinculoRequestDTO) {
+    public ResponseEntity<TermoVinculoResponseDTO> atualizarTermoVinculo(@PathVariable Long id, @Valid @RequestBody TermoVinculoRequestDTO termoVinculoRequestDTO) {
         TermoVinculoResponseDTO termoVinculoResponseDTO = termoVinculoService.atualizarTermoVinculo(id, termoVinculoRequestDTO);
         return ResponseEntity.status(HttpStatus.OK).body(termoVinculoResponseDTO);
     }

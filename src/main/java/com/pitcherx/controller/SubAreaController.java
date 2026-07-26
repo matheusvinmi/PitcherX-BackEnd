@@ -5,6 +5,7 @@ import com.pitcherx.dto.subArea.SubAreaResponseDTO;
 import com.pitcherx.service.SubAreaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -37,14 +38,14 @@ public class SubAreaController {
 
     @PostMapping
     @Operation(description = "Este endpoint faz o cadastro de subárea.")
-    public ResponseEntity<SubAreaResponseDTO> createSubArea(@RequestBody SubAreaRequestDTO subAreaRequestDTO) {
+    public ResponseEntity<SubAreaResponseDTO> createSubArea(@Valid @RequestBody SubAreaRequestDTO subAreaRequestDTO) {
         SubAreaResponseDTO subAreaResponseDTO = subAreaService.salvarSubArea(subAreaRequestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(subAreaResponseDTO);
     }
 
     @PutMapping("/{id}")
     @Operation(description = "Este endpoint faz a atualização de subárea através do ID.")
-    public ResponseEntity<SubAreaResponseDTO> updateSubArea(@PathVariable Long id, SubAreaRequestDTO subAreaRequestDTO){
+    public ResponseEntity<SubAreaResponseDTO> updateSubArea(@PathVariable Long id, @Valid @RequestBody SubAreaRequestDTO subAreaRequestDTO){
         SubAreaResponseDTO subAreaResponseDTO = subAreaService.atualizarSubArea(id, subAreaRequestDTO);
         return ResponseEntity.status(HttpStatus.OK).body(subAreaResponseDTO);
     }

@@ -2,9 +2,9 @@ package com.pitcherx.controller;
 
 import java.util.List;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,13 +42,13 @@ public class ComentarioController {
 	}
 	
 	@PostMapping
-	public ResponseEntity<ComentarioResponseDTO> saveComentario(@Validated @RequestBody ComentarioRequestDTO comentarioRequestDTO){
+	public ResponseEntity<ComentarioResponseDTO> saveComentario(@Valid @RequestBody ComentarioRequestDTO comentarioRequestDTO){
 		ComentarioResponseDTO comentarioResponseDTO = comentarioService.criarComentario(comentarioRequestDTO);
 		return ResponseEntity.status(HttpStatus.CREATED).body(comentarioResponseDTO);
 	}
 	
 	@PutMapping("/{id}")
-	public ResponseEntity<ComentarioResponseDTO> updateComentario(@PathVariable Long id, @Validated @RequestBody ComentarioRequestDTO comentarioRequestDTO){
+	public ResponseEntity<ComentarioResponseDTO> updateComentario(@PathVariable Long id, @Valid @RequestBody ComentarioRequestDTO comentarioRequestDTO){
 		ComentarioResponseDTO comentarioResponseDTO = comentarioService.atualizarComentario(id, comentarioRequestDTO);
 		return ResponseEntity.status(HttpStatus.OK).body(comentarioResponseDTO);
 	}
