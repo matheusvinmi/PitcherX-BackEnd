@@ -112,4 +112,12 @@
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }
 
+        @PostMapping("/alterar-role/{idUsuario}/{idRole}")
+        @PreAuthorize("hasRole('ADMIN')")
+        @Operation(description = "Este endpoint permite que o usuário altere a role de outro usuário.")
+        public ResponseEntity<UsuarioResponseDTO> alterarRole(@PathVariable Long idUsuario, @PathVariable Long idRole) {
+            UsuarioResponseDTO usuarioResponseDTO = usuarioService.alterarRole(idUsuario, idRole);
+            return ResponseEntity.status(HttpStatus.OK).body(usuarioResponseDTO);
+        }
+
     }

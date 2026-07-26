@@ -165,4 +165,19 @@ public class UsuarioService {
         return usuarioMapper.toDTO(salvo);
      }
 
+     @Transactional
+     public UsuarioResponseDTO alterarRole(Long idUsuario, Long idRole){
+
+         Usuario usuario = usuarioRepository.findById(idUsuario).
+                 orElseThrow(() -> new EntityNotFoundException("Sem usuário com o ID informado!"));
+
+         Role role = roleRepository.findById(idRole).
+                 orElseThrow(() -> new EntityNotFoundException("Sem função com o ID informado!"));
+
+         usuario.getRoles().add(role);
+
+         Usuario salvo = usuarioRepository.save(usuario);
+         return usuarioMapper.toDTO(salvo);
+     }
+
 }
