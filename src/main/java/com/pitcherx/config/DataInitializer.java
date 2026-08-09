@@ -1,13 +1,12 @@
 package com.pitcherx.config;
 
+import com.pitcherx.model.*;
+import com.pitcherx.repository.TipoConteudoRepository;
 import com.pitcherx.security.RoleType;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.pitcherx.model.Role;
-import com.pitcherx.model.TipoVinculo;
-import com.pitcherx.model.Usuario;
 import com.pitcherx.repository.RoleRepository;
 import com.pitcherx.repository.TipoVinculoRepository;
 import com.pitcherx.repository.UsuarioRepository;
@@ -28,7 +27,8 @@ public class DataInitializer {
 	CommandLineRunner inicializarDados(
 			RoleRepository roleRepository,
 			TipoVinculoRepository tipoVinculoRepository,
-			UsuarioRepository usuarioRepository) {
+			UsuarioRepository usuarioRepository,
+			TipoConteudoRepository tipoConteudoRepository) {
 
 		return args -> {
 			if (roleRepository.count() == 0) {
@@ -61,6 +61,15 @@ public class DataInitializer {
 				admin.setRoles(Set.of(role));
 				usuarioRepository.save(admin);
 				IO.println("Admin inicial adicionado ao banco de dados.");
+			}
+
+			if (tipoConteudoRepository.count()==0){
+				for(TipoConteudoEnum tpConteudo : TipoConteudoEnum.values()) {
+					TipoConteudo tipoConteudo = new TipoConteudo();
+					tipoConteudo.setNomeTipoConteudo(tpConteudo);
+					tipoConteudoRepository.save(tipoConteudo);
+				}
+				IO.println("Tipos de conteudo adicionadas ao banco de dados.");
 			}
 		};
 	}

@@ -23,7 +23,7 @@ public class StatusProjeto {
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "status_pj", nullable = false)
-	private Status status;
+	private StatusEnum statusEnum;
 	
 	@Column(name = "data_status", nullable = false)
 	private LocalDateTime dataStatus;

@@ -29,12 +29,6 @@ public class SubComentario {
 	@Column(name = "texto_sub_comentario", nullable = false)
 	private String textoSubComentario;
 	
-	@Column(name = "like_sub_comentario", nullable = true)
-	private Integer likeSubComentario;
-	
-	@Column(name = "dislike_sub_comentario", nullable = true)
-	private Integer dislikeSubComentario;
-	
 	@ManyToOne
 	@JoinColumn(name = "comentario_id", nullable = false)
 	private Comentario comentario;

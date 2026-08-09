@@ -10,8 +10,6 @@ public record PostagemResponseDTO(
 		String textoPostagem,
 		@JsonFormat(pattern = "dd/MM/yyyy")
 		LocalDate dataPostagem,
-		Integer likePostagem,
-		Integer dislikePostagem,
 		Long usuarioId
 		) {
 

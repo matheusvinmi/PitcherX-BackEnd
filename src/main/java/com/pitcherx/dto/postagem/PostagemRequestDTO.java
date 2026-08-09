@@ -18,8 +18,6 @@ public record PostagemRequestDTO(
 		@JsonFormat(pattern = "dd/MM/yyyy")
 		@Schema(type = "string", pattern = "dd/MM/yyyy", example = "dd/MM/yyyy")
 		LocalDate dataPostagem,
-		Integer likePostagem,
-		Integer dislikePostagem,
 		String urlImagemPostagem,
 		@NotNull(message = "É obrigatório informar o ID do usuário a quem a postagem pertence!")
 		Long usuarioId

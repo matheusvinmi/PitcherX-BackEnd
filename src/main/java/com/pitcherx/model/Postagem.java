@@ -38,12 +38,6 @@ public class Postagem {
 	@Column(name = "data_postagem", nullable = false)
 	private LocalDate dataPostagem;
 	
-	@Column(name = "like_postagem", nullable = true)
-	private Integer likePostagem;
-	
-	@Column(name = "dislike_postagem", nullable = true)
-	private Integer dislikePostagem;
-	
 	@Column(name = "url_imagem_postagem", nullable = true)
 	private String urlImagemPostagem;
 	

@@ -29,12 +29,6 @@ public class Comentario {
 	@Column(name = "texto_comentario", nullable = false)
 	private String textoComentario;
 	
-	@Column(name = "like_comentario", nullable = true)
-	private Integer likeComentario;
-	
-	@Column(name = "dislike_comentario", nullable = true)
-	private Integer dislikeComentario;
-	
 	@ManyToOne
 	@JoinColumn(name = "postagem_id", nullable = false)
 	private Postagem postagem;
