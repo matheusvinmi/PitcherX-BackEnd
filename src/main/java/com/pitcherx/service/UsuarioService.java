@@ -33,7 +33,6 @@ public class UsuarioService {
     private final UsuarioMapper usuarioMapper;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
-    private final AuthenticationManager authenticationManager;
     private final TokenConfig tokenConfig;
 
     public UsuarioService(UsuarioRepository usuarioRepository, UsuarioMapper usuarioMapper,
@@ -42,7 +41,6 @@ public class UsuarioService {
         this.usuarioMapper = usuarioMapper;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
-        this.authenticationManager = authenticationManager;
         this.tokenConfig = tokenConfig;
      }
 
