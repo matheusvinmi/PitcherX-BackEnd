@@ -83,7 +83,7 @@
             return ResponseEntity.status(HttpStatus.OK).body(loginResponseDTO);
         }
 
-        @PostMapping("/redefinir-senha/{id}")
+        @PutMapping("/redefinir-senha/{id}")
         @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.idUsuario")
         @Operation(description = "Este endpoint faz a redefinição de senha de usuário.")
         public ResponseEntity<UsuarioResponseDTO> redefinirSenha(@PathVariable Long id, @Valid @RequestBody RedefinirSenhaRequestDTO redefinirSenhaRequestDTO) {
