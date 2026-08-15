@@ -5,6 +5,7 @@ import com.pitcherx.dto.usuario.UsuarioRequestDTO;
 import com.pitcherx.dto.usuario.UsuarioResponseDTO;
 import com.pitcherx.dto.usuario.login.LoginRequestDTO;
 import com.pitcherx.dto.usuario.login.LoginResponseDTO;
+import com.pitcherx.service.EmailService;
 import com.pitcherx.mapper.UsuarioMapper;
 import com.pitcherx.model.Role;
 import com.pitcherx.model.Usuario;
@@ -34,14 +35,16 @@ public class UsuarioService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final TokenConfig tokenConfig;
+    private final EmailService emailService;
 
     public UsuarioService(UsuarioRepository usuarioRepository, UsuarioMapper usuarioMapper,
-    		RoleRepository roleRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, TokenConfig tokenConfig) {
+    		RoleRepository roleRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, TokenConfig tokenConfig, EmailService emailService) {
         this.usuarioRepository = usuarioRepository;
         this.usuarioMapper = usuarioMapper;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
         this.tokenConfig = tokenConfig;
+        this.emailService = emailService;
      }
 
      @Transactional(readOnly = true)
@@ -73,6 +76,7 @@ public class UsuarioService {
         usuario.setRoles(Set.of(role));
 
         Usuario salvo = usuarioRepository.save(usuario);
+        emailService.enviarEmailBoasVindas(usuarioRequestDTO.emailUsuario(), usuarioRequestDTO.nomeUsuario());
         return usuarioMapper.toDTO(salvo);
      }
 
@@ -102,8 +106,9 @@ public class UsuarioService {
              usuario.setActive(true);
          }
 
-            Usuario salvo = usuarioRepository.save(usuario);
-            return usuarioMapper.toDTO(salvo);
+Usuario salvo = usuarioRepository.save(usuario);
+        emailService.enviarEmailBoasVindas(salvo.getEmailUsuario(), salvo.getNomeUsuario());
+        return usuarioMapper.toDTO(salvo);
      }
 
      @Transactional

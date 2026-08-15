@@ -23,6 +23,33 @@ public class EmailService {
     }
 
     @Transactional
+    public void enviarEmailBoasVindas(String email, String nome) {
+        try {
+            Context context = new Context();
+            context.setVariable("nome", nome != null ? nome : "Usuário");
+            context.setVariable("email", email);
+            context.setVariable("ano", LocalDate.now().getYear());
+
+            String htmlContent = templateEngine.process("boas-vindas.html", context);
+
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+
+            messageHelper.setTo(email);
+            messageHelper.setSubject("Bem-vindo ao PitcherX!");
+            messageHelper.setText(htmlContent, true);
+            messageHelper.setFrom("matheusviniciusgali05@gmail.com");
+
+            mailSender.send(mimeMessage);
+
+        } catch (MailException e) {
+            throw new RuntimeException("Falha ao enviar email de boas-vindas", e);
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao processar envio de email", e);
+        }
+    }
+
+    @Transactional
     public void enviarEmailRedefinirSenha(String email, String nome, String codigo) {
         try {
             Context context = new Context();
