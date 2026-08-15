@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,18 +25,21 @@ public class EspecialidadeController {
     }
 
     @GetMapping
+	@PreAuthorize("hasAnyRole('ADMIN', 'USUARIO', 'EMPRESA')")
     @Operation(description = "Este endpoint faz a listagem de todas as especialidades.")
     public ResponseEntity<List<EspecialidadeResponseDTO>> getEspecialidades() {
         return ResponseEntity.status(HttpStatus.OK).body(especialidadeService.listarEspecialidades());
     }
 
     @GetMapping("/{id}")
+	@PreAuthorize("hasAnyRole('ADMIN', 'USUARIO', 'EMPRESA')")
     @Operation(description = "Este endpoint faz a busca de especialidade através do ID.")
     public ResponseEntity<EspecialidadeResponseDTO> getEspecialidadeById(@PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(especialidadeService.buscarEspecialidadePorId(id));
     }
 
     @PostMapping
+	@PreAuthorize("hasAnyRole('ADMIN', 'USUARIO', 'EMPRESA')")
     @Operation(description = "Este endpoint faz o cadastro de especialidade.")
     public ResponseEntity<EspecialidadeResponseDTO> createEspecialidade(@Valid @RequestBody EspecialidadeRequestDTO especialidadeRequestDTO) {
         EspecialidadeResponseDTO especialidadeResponseDTO = especialidadeService.criarEspecialidade(especialidadeRequestDTO);
@@ -43,6 +47,7 @@ public class EspecialidadeController {
     }
 
     @PutMapping("/{id}")
+	@PreAuthorize("hasAnyRole('ADMIN', 'USUARIO', 'EMPRESA')")
     @Operation(description = "Este endpoint faz a atualização de especialidade através do ID.")
     public ResponseEntity<EspecialidadeResponseDTO> updateEspecialidade(@PathVariable Long id, @Valid @RequestBody EspecialidadeRequestDTO especialidadeRequestDTO) {
         EspecialidadeResponseDTO especialidadeResponseDTO = especialidadeService.atualizarEspecialidade(id, especialidadeRequestDTO);
@@ -50,6 +55,7 @@ public class EspecialidadeController {
     }
 
     @DeleteMapping("/{id}")
+	@PreAuthorize("hasAnyRole('ADMIN', 'USUARIO', 'EMPRESA')")
     @Operation(description = "Este endpoint faz a remoção de especialidade através do ID.")
     public ResponseEntity<Void> deleteEspecialidade(@PathVariable Long id) {
         especialidadeService.deletarEspecialidade(id);

@@ -63,11 +63,9 @@ public class DataInitializer {
 				IO.println("Admin inicial adicionado ao banco de dados.");
 			}
 
-			if (tipoConteudoRepository.count()==0){
+			if (tipoConteudoRepository.count() == 0){
 				for(TipoConteudoEnum tpConteudo : TipoConteudoEnum.values()) {
-					TipoConteudo tipoConteudo = new TipoConteudo();
-					tipoConteudo.setNomeTipoConteudo(tpConteudo);
-					tipoConteudoRepository.save(tipoConteudo);
+					tipoConteudoRepository.save(new TipoConteudo(tpConteudo));
 				}
 				IO.println("Tipos de conteudo adicionadas ao banco de dados.");
 			}

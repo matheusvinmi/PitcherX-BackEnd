@@ -20,22 +20,42 @@ public class CurtidaController {
     }
 
     @PostMapping("/{usuarioId}/{tipoConteudoId}/{conteudoId}")
-    @Operation(summary = "Endpoint para curtir um conteúdo", description = "Este endpoint permite que um usuário curta um conteúdo específico, " +
-            "como uma postagem, comentário ou subcomentário. O usuário deve fornecer seu ID e o ID do tipo de conteúdo que deseja curtir.")
+    @Operation(summary = "Curtir um conteudo", description = "Permite que um usuario curta um conteudo (postagem, comentario, subcomentario ou projeto)")
     @PreAuthorize("hasAnyRole('ADMIN', 'USUARIO', 'EMPRESA')")
-    public ResponseEntity<Void> saveCurtida(@PathVariable Long usuarioId,
-                                                          @PathVariable Long tipoConteudoId,
-                                                          @PathVariable Long conteudoId){
-        curtidaService.curtirConteudo(usuarioId, tipoConteudoId, conteudoId);
+    public ResponseEntity<Void> curtir(@PathVariable Long usuarioId,
+                                        @PathVariable Long tipoConteudoId,
+                                        @PathVariable Long conteudoId) {
+        curtidaService.curtir(usuarioId, tipoConteudoId, conteudoId);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @DeleteMapping("/remover-curtida/{id}")
-    @Operation(summary = "Endpoint para remover uma curtida", description = "Este endpoint permite que um usuário remova uma curtida específica.")
+    @DeleteMapping("/{usuarioId}/{tipoConteudoId}/{conteudoId}")
+    @Operation(summary = "Descurtir um conteudo", description = "Permite que um usuario remova sua curtida de um conteudo")
     @PreAuthorize("hasAnyRole('ADMIN', 'USUARIO', 'EMPRESA')")
-    public ResponseEntity<Void> deleteCurtida(@PathVariable Long id){
-        curtidaService.deletarCurtida(id);
+    public ResponseEntity<Void> descurtir(@PathVariable Long usuarioId,
+                                           @PathVariable Long tipoConteudoId,
+                                           @PathVariable Long conteudoId) {
+        curtidaService.descurtir(usuarioId, tipoConteudoId, conteudoId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @GetMapping("/status/{usuarioId}/{tipoConteudoId}/{conteudoId}")
+    @Operation(summary = "Verificar se usuario curtiu", description = "Retorna true se o usuario curtiu o conteudo, false caso contrario")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USUARIO', 'EMPRESA')")
+    public ResponseEntity<Boolean> isCurtido(@PathVariable Long usuarioId,
+                                              @PathVariable Long tipoConteudoId,
+                                              @PathVariable Long conteudoId) {
+        boolean curtido = curtidaService.isCurtido(usuarioId, tipoConteudoId, conteudoId);
+        return ResponseEntity.ok(curtido);
+    }
+
+    @GetMapping("/count/{tipoConteudoId}/{conteudoId}")
+    @Operation(summary = "Obter total de curtidas", description = "Retorna o numero total de curtidas de um conteudo")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USUARIO', 'EMPRESA')")
+    public ResponseEntity<Long> getCurtidasCount(@PathVariable Long tipoConteudoId,
+                                                  @PathVariable Long conteudoId) {
+        long count = curtidaService.getCurtidasCount(tipoConteudoId, conteudoId);
+        return ResponseEntity.ok(count);
     }
 
 }

@@ -13,15 +13,12 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "curtida")
+@Table(name = "curtida", uniqueConstraints = @UniqueConstraint(columnNames = {"usuario_id", "tipo_conteudo_id", "conteudo_id"}))
 public class Curtida {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idCurtida;
-
-    @Column(name = "curtida")
-    private boolean curtida = true;
 
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)

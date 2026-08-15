@@ -2,7 +2,7 @@ server:
   port: 8080
 
 cors:
-  originPatterns: ${FRONTEND_URL_1}
+    originPatterns: ${FRONTEND_URL_1}
 
 spring:
   application:
