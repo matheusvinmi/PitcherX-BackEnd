@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,25 +27,29 @@ public class TermoVinculoController {
 
     @GetMapping
     @Operation(description = "Este endpoint é responsável por listar os termos de vínculo disponíveis.")
+    @PreAuthorize("permitAll()")
     public ResponseEntity<List<TermoVinculoResponseDTO>> getTermosVinculo() {
         return ResponseEntity.status(HttpStatus.OK).body(termoVinculoService.listarTermosVinculo());
     }
 
     @GetMapping("/{id}")
     @Operation(description = "Este endpoint é responsável por buscar um termo de vínculo específico por ID.")
+    @PreAuthorize("permitAll()")
     public ResponseEntity<TermoVinculoResponseDTO> getTermoVinculoById(@PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(termoVinculoService.buscarTermoVinculoPorId(id));
     }
 
     @PostMapping
     @Operation(description = "Este endpoint é responsável por criar um novo termo de vínculo.")
-    public ResponseEntity<TermoVinculoResponseDTO> criarTermoVinculo(@Valid @RequestBody TermoVinculoRequestDTO termoVinculoRequestDTO){
+    @PreAuthorize("hasAnyRole('USUARIO', 'EMPRESA')")
+        public ResponseEntity<TermoVinculoResponseDTO> criarTermoVinculo(@Valid @RequestBody TermoVinculoRequestDTO termoVinculoRequestDTO){
         TermoVinculoResponseDTO termoVinculoResponseDTO = termoVinculoService.criarTermoVinculo(termoVinculoRequestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(termoVinculoResponseDTO);
     }
 
     @PutMapping("/{id}")
     @Operation(description = "Este endpoint é responsável por atualizar um termo de vínculo existente por ID.")
+    @PreAuthorize("hasAnyRole('USUARIO', 'EMPRESA')")
     public ResponseEntity<TermoVinculoResponseDTO> atualizarTermoVinculo(@PathVariable Long id, @Valid @RequestBody TermoVinculoRequestDTO termoVinculoRequestDTO) {
         TermoVinculoResponseDTO termoVinculoResponseDTO = termoVinculoService.atualizarTermoVinculo(id, termoVinculoRequestDTO);
         return ResponseEntity.status(HttpStatus.OK).body(termoVinculoResponseDTO);
@@ -52,6 +57,7 @@ public class TermoVinculoController {
 
     @DeleteMapping("/{id}")
     @Operation(description = "Este endpoint é responsável por excluir um termo de vínculo por ID.")
+    @PreAuthorize("hasAnyRole('USUARIO', 'EMPRESA', 'ADMIN')")
     public ResponseEntity<Void> excluirTermoVinculo(@PathVariable Long id) {
         termoVinculoService.deletarTermoVinculo(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

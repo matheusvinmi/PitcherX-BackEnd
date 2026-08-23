@@ -54,7 +54,7 @@ public class ProjetoController {
 	}
 	
 	@PostMapping
-	@PreAuthorize("permitAll()")
+	@PreAuthorize("hasAnyRole('USUARIO', 'EMPRESA')")
     @Operation(description = "Endpoint para criar um novo projeto")
 	public ResponseEntity<ProjetoResponseDTO> createProjeto(@Valid @RequestBody ProjetoRequestDTO projetoRequestDTO){
 		ProjetoResponseDTO projetoResponseDTO = projetoService.criarProjeto(projetoRequestDTO);
@@ -62,7 +62,7 @@ public class ProjetoController {
 	}
 	
 	@PutMapping("/{id}")
-	@PreAuthorize("hasAnyRole('ADMIN', 'USUARIO', 'EMPRESA')")
+	@PreAuthorize("hasAnyRole('USUARIO', 'EMPRESA')")
     @Operation(description = "Endpoint para atualizar um projeto")
 	public ResponseEntity<ProjetoResponseDTO> updateProjeto(@PathVariable Long id, @Valid @RequestBody ProjetoRequestDTO projetoRequestDTO){
 		ProjetoResponseDTO projetoResponseDTO = projetoService.atualizarProjeto(id, projetoRequestDTO);

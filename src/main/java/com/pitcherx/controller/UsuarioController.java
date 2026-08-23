@@ -54,7 +54,7 @@
         }
 
         @PutMapping("/{id}")
-        @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.idUsuario")
+        @PreAuthorize("hasRole('ADMIN') or #id == principal.idUsuario")
         @Operation(description = "Este endpoint faz a atualização de usuário através do ID.")
         public ResponseEntity<UsuarioResponseDTO> updateUsuario(@PathVariable Long id, @Valid @RequestBody UsuarioRequestDTO usuarioRequestDTO) {
             UsuarioResponseDTO usuarioResponseDTO = usuarioService.atualizarUsuario(id, usuarioRequestDTO);
@@ -62,14 +62,14 @@
         }
 
         @PutMapping("/ativar-desativar/{id}")
-        @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.idUsuario")
+        @PreAuthorize("hasRole('ADMIN') or #id == principal.idUsuario")
         @Operation(description = "Este endpoint faz a ativação ou desativação de usuário através do ID.")
         public ResponseEntity<UsuarioResponseDTO> ativarDesativarUsuario(@PathVariable Long id) {
             return ResponseEntity.status(HttpStatus.OK).body(usuarioService.ativarDesativarUsuario(id));
         }
 
         @DeleteMapping("/{id}")
-        @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.idUsuario")
+        @PreAuthorize("hasRole('ADMIN') or #id == principal.idUsuario")
         @Operation(description = "Este endpoint faz a exclusão de usuário através do ID.")
         public ResponseEntity<Void> deleteUsuario(@PathVariable Long id) {
             usuarioService.deletarUsuario(id);
@@ -84,7 +84,7 @@
         }
 
         @PutMapping("/redefinir-senha/{id}")
-        @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.idUsuario")
+        @PreAuthorize("hasRole('ADMIN') or #id == principal.idUsuario")
         @Operation(description = "Este endpoint faz a redefinição de senha de usuário.")
         public ResponseEntity<UsuarioResponseDTO> redefinirSenha(@PathVariable Long id, @Valid @RequestBody RedefinirSenhaRequestDTO redefinirSenhaRequestDTO) {
             UsuarioResponseDTO usuarioResponseDTO = usuarioService.redefinirSenha(id, redefinirSenhaRequestDTO);

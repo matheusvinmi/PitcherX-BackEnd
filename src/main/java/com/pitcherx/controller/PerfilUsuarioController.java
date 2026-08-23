@@ -54,7 +54,7 @@ public class PerfilUsuarioController {
 	}
 
 	@DeleteMapping("/{id}")
-	@PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+	@PreAuthorize("hasAnyRole('ADMIN','USUARIO')")
 	@Operation(description = "Este endpoint faz a remoção de perfil de usuario através do ID.")
 	public ResponseEntity<Void> deletarPerfilUsuario(@PathVariable Long id){
 		perfilUsuarioService.deletarPerfilUsuario(id);

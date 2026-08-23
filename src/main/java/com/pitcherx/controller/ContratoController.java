@@ -25,21 +25,21 @@ public class ContratoController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+    @PreAuthorize("permitAll()")
     @Operation(summary = "Listar contratos", description = "Retorna uma lista de todos os contratos cadastrados.")
     public ResponseEntity<List<ContratoResponseDTO>> getContratos(){
         return ResponseEntity.status(HttpStatus.OK).body(contratoService.listarContratos());
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+    @PreAuthorize("permitAll()")
     @Operation(summary = "Buscar contrato por ID", description = "Retorna os detalhes de um contrato específico com base no ID fornecido.")
     public ResponseEntity<ContratoResponseDTO> getContratoById(@PathVariable Long id){
         return ResponseEntity.status(HttpStatus.OK).body(contratoService.buscarContratoPorId(id));
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+    @PreAuthorize("hasAnyRole('ADMIN','USUARIO','EMPRESARIO')")
     @Operation(summary = "Criar contrato", description = "Cria um novo contrato com os dados fornecidos.")
     public ResponseEntity<ContratoResponseDTO> createContrato(@Valid @RequestBody ContratoRequestDTO contratoRequestDTO){
         ContratoResponseDTO contratoResponseDTO = contratoService.criarContrato(contratoRequestDTO);
@@ -47,7 +47,7 @@ public class ContratoController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+    @PreAuthorize("hasAnyRole('ADMIN','USUARIO','EMPRESARIO')")
     @Operation(summary = "Atualizar contrato", description = "Atualiza os dados de um contrato específico com base no ID fornecido.")
     public ResponseEntity<ContratoResponseDTO> updateContrato(@PathVariable Long id, @Valid @RequestBody ContratoRequestDTO contratoRequestDTO){
         ContratoResponseDTO contratoResponseDTO = contratoService.atualizarContrato(id, contratoRequestDTO);
@@ -55,7 +55,7 @@ public class ContratoController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+    @PreAuthorize("hasAnyRole('ADMIN','USUARIO','EMPRESARIO')")
     @Operation(summary = "Deletar contrato", description = "Deleta um contrato específico com base no ID fornecido.")
     public ResponseEntity<Void> deleteContrato(@PathVariable Long id) {
         contratoService.deletarContrato(id);

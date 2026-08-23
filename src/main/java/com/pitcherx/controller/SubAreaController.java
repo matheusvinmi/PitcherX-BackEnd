@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,12 +26,14 @@ public class SubAreaController {
 
     @GetMapping
     @Operation(description = "Este endpoint faz a listagem de todas as subáreas.")
+    @PreAuthorize("permitAll()")
     public ResponseEntity<List<SubAreaResponseDTO>> getSubAreas() {
         return ResponseEntity.status(HttpStatus.OK).body(subAreaService.listarSubAreas());
     }
 
     @GetMapping("/{id}")
     @Operation(description = "Este endpoint faz a busca de subárea através do ID.")
+    @PreAuthorize("permitAll()")
     public ResponseEntity<SubAreaResponseDTO> getSubAreaById(@PathVariable Long id) {
         SubAreaResponseDTO subAreaResponseDTO = subAreaService.buscarSubAreaPorId(id);
         return ResponseEntity.status(HttpStatus.OK).body(subAreaResponseDTO);
@@ -38,6 +41,7 @@ public class SubAreaController {
 
     @PostMapping
     @Operation(description = "Este endpoint faz o cadastro de subárea.")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<SubAreaResponseDTO> createSubArea(@Valid @RequestBody SubAreaRequestDTO subAreaRequestDTO) {
         SubAreaResponseDTO subAreaResponseDTO = subAreaService.salvarSubArea(subAreaRequestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(subAreaResponseDTO);
@@ -45,6 +49,7 @@ public class SubAreaController {
 
     @PutMapping("/{id}")
     @Operation(description = "Este endpoint faz a atualização de subárea através do ID.")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<SubAreaResponseDTO> updateSubArea(@PathVariable Long id, @Valid @RequestBody SubAreaRequestDTO subAreaRequestDTO){
         SubAreaResponseDTO subAreaResponseDTO = subAreaService.atualizarSubArea(id, subAreaRequestDTO);
         return ResponseEntity.status(HttpStatus.OK).body(subAreaResponseDTO);
@@ -52,6 +57,7 @@ public class SubAreaController {
 
     @DeleteMapping("/{id}")
     @Operation(description = "Este endpoint faz a remoção de subárea através do ID.")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<Void> deleteSubArea(@PathVariable Long id) {
         subAreaService.deletarSubArea(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

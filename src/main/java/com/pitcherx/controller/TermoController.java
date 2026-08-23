@@ -25,21 +25,21 @@ public class TermoController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+    @PreAuthorize("permitAll()")
     @Operation(summary = "Listar todos os termos", description = "Retorna uma lista de todos os termos cadastrados")
     public ResponseEntity<List<TermoResponseDTO>> getTermos(){
         return ResponseEntity.status(HttpStatus.OK).body(termoService.listarTermos());
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+    @PreAuthorize("permitAll()")
     @Operation(summary = "Buscar termo por ID", description = "Retorna um termo específico com base no ID fornecido")
     public ResponseEntity<TermoResponseDTO> getTermoById(@PathVariable Long id){
         return ResponseEntity.status(HttpStatus.OK).body(termoService.buscarTermoPorId(id));
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @Operation(summary = "Criar novo termo", description = "Cria um novo termo com base nos dados fornecidos")
     public ResponseEntity<TermoResponseDTO> createTermo(@Valid @RequestBody TermoRequestDTO termoRequestDTO){
         TermoResponseDTO termoResponseDTO = termoService.criarTermo(termoRequestDTO);
@@ -47,7 +47,7 @@ public class TermoController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @Operation(summary = "Atualizar termo existente", description = "Atualiza um termo existente com base no ID fornecido e nos dados fornecidos")
     public ResponseEntity<TermoResponseDTO> updateTermo(@PathVariable Long id, @Valid @RequestBody TermoRequestDTO termoRequestDTO){
         TermoResponseDTO termoResponseDTO = termoService.atualizarTermo(id, termoRequestDTO);
@@ -55,7 +55,7 @@ public class TermoController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @Operation(summary = "Deletar termo", description = "Deleta um termo específico com base no ID fornecido")
     public ResponseEntity<Void> deleteTermo(@PathVariable Long id) {
         termoService.deletarTermo(id);

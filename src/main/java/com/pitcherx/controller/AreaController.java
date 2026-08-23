@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,18 +26,21 @@ public class AreaController {
     }
 
     @GetMapping
+    @PreAuthorize("permitAll()")
     @Operation(summary = "Listagem de areas", description = "Este endpoint faz a listagem de todas as areas.")
     public ResponseEntity<List<AreaResponseDTO>> getAreas(){
         return ResponseEntity.status(HttpStatus.OK).body(areaService.listarAreas());
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("permitAll()")
     @Operation(summary = "Busca de area por ID", description = "Este endpoint faz a busca de area através do ID.")
     public ResponseEntity<AreaResponseDTO> getAreaById(@PathVariable Long id){
         return ResponseEntity.status(HttpStatus.OK).body(areaService.buscarAreaPorId(id));
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @Operation(summary = "Cadastro de area", description = "Este endpoint faz o cadastro de area.")
     public ResponseEntity<AreaResponseDTO> createArea(@Valid @RequestBody AreaRequestDTO areaRequestDTO){
         AreaResponseDTO areaResponseDTO = areaService.criarArea(areaRequestDTO);
@@ -44,6 +48,7 @@ public class AreaController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @Operation(summary = "Atualização de area", description = "Este endpoint faz a atualização de area através do ID.")
     public ResponseEntity<AreaResponseDTO> updateArea(@PathVariable Long id, @Valid @RequestBody AreaRequestDTO areaRequestDTO){
         AreaResponseDTO areaResponseDTO = areaService.atualizarArea(id, areaRequestDTO);
@@ -51,6 +56,7 @@ public class AreaController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @Operation(summary = "Remover uma area", description = "Este endpoint faz a remoção de area através do ID.")
     public ResponseEntity<Void> deleteArea(@PathVariable Long id){
         areaService.deletarArea(id);

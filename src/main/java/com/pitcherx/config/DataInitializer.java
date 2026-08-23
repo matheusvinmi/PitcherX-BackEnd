@@ -39,7 +39,7 @@ public class DataInitializer {
 			}
 
 			if (tipoVinculoRepository.count() == 0) {
-				String[] tipoVinculos = {"CRIADOR", "SOCIO", "INVESTIDOR"};
+				String[] tipoVinculos = {"CRIADOR", "SOCIO", "INVESTIDOR", "VISUALIZADOR"};
 				for(String tpVinculo : tipoVinculos) {
 					TipoVinculo tipoVinculo = new TipoVinculo();
 					tipoVinculo.setNomeTipoVinculo(tpVinculo);
