@@ -11,6 +11,7 @@ import org.mapstruct.MappingTarget;
 public interface UsuarioMapper {
 
     @Mapping(source = "active", target = "active")
+    @Mapping(target = "roles", expression = "java(usuario.getRoles().stream().map(r -> r.getNomeRole().name()).toList())")
     UsuarioResponseDTO toDTO(Usuario usuario);
 
     @Mapping(target = "idUsuario", ignore = true)
