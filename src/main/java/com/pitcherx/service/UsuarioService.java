@@ -12,19 +12,18 @@ import com.pitcherx.repository.RoleRepository;
 import com.pitcherx.repository.UsuarioRepository;
 import com.pitcherx.security.RoleType;
 import com.pitcherx.security.TokenConfig;
+import com.pitcherx.utils.ImagemUploadUtil;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class UsuarioService {
@@ -35,15 +34,17 @@ public class UsuarioService {
     private final PasswordEncoder passwordEncoder;
     private final TokenConfig tokenConfig;
     private final EmailService emailService;
+    private final ImagemUploadUtil imagemUploadUtil;
 
     public UsuarioService(UsuarioRepository usuarioRepository, UsuarioMapper usuarioMapper,
-    		RoleRepository roleRepository, PasswordEncoder passwordEncoder, TokenConfig tokenConfig, EmailService emailService) {
+    		RoleRepository roleRepository, PasswordEncoder passwordEncoder, TokenConfig tokenConfig, EmailService emailService, ImagemUploadUtil imagemUploadUtil) {
         this.usuarioRepository = usuarioRepository;
         this.usuarioMapper = usuarioMapper;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
         this.tokenConfig = tokenConfig;
         this.emailService = emailService;
+        this.imagemUploadUtil = imagemUploadUtil;
      }
 
      @Transactional(readOnly = true)
@@ -180,5 +181,30 @@ public class UsuarioService {
          Usuario salvo = usuarioRepository.save(usuario);
          return usuarioMapper.toDTO(salvo);
      }
+
+    @Transactional
+    public UsuarioResponseDTO atualizarFotoUsuario(Long idUsuario, MultipartFile arquivo) {
+        Usuario usuario = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new EntityNotFoundException("Sem usuário com o ID informado!"));
+
+        imagemUploadUtil.deletarImagem(usuario.getUrlImagemUsuario());
+
+        String novaUrl = imagemUploadUtil.salvarImagem(arquivo);
+        usuario.setUrlImagemUsuario(novaUrl);
+
+        Usuario salvo = usuarioRepository.save(usuario);
+        return usuarioMapper.toDTO(salvo);
+    }
+
+    @Transactional
+    public void removerFotoUsuario(Long idUsuario) {
+        Usuario usuario = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new EntityNotFoundException("Sem usuário com o ID informado!"));
+
+        imagemUploadUtil.deletarImagem(usuario.getUrlImagemUsuario());
+        usuario.setUrlImagemUsuario(null);
+
+        usuarioRepository.save(usuario);
+    }
 
 }

@@ -16,6 +16,7 @@
     import org.springframework.http.ResponseEntity;
     import org.springframework.security.access.prepost.PreAuthorize;
     import org.springframework.web.bind.annotation.*;
+    import org.springframework.web.multipart.MultipartFile;
 
     import java.util.List;
 
@@ -118,6 +119,21 @@
         public ResponseEntity<UsuarioResponseDTO> alterarRole(@PathVariable Long idUsuario, @PathVariable Long idRole) {
             UsuarioResponseDTO usuarioResponseDTO = usuarioService.alterarRole(idUsuario, idRole);
             return ResponseEntity.status(HttpStatus.OK).body(usuarioResponseDTO);
+        }
+
+        @PostMapping(value = "/{id}/foto", consumes = "multipart/form-data")
+        @PreAuthorize("hasAnyRole('ADMIN', 'USUARIO', 'EMPRESA')")
+        @Operation(description = "Endpoint para atualizar a foto de perfil do usuário")
+        public ResponseEntity<UsuarioResponseDTO> atualizarFoto(@PathVariable Long id, @RequestParam("arquivo") MultipartFile arquivo) {
+            return ResponseEntity.status(HttpStatus.OK).body(usuarioService.atualizarFotoUsuario(id, arquivo));
+        }
+
+        @DeleteMapping("/{id}/foto")
+        @PreAuthorize("hasAnyRole('ADMIN', 'USUARIO', 'EMPRESA')")
+        @Operation(description = "Endpoint para remover a foto de perfil do usuário")
+        public ResponseEntity<Void> removerFoto(@PathVariable Long id) {
+            usuarioService.removerFotoUsuario(id);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }
 
     }

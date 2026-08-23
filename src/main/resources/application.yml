@@ -4,9 +4,19 @@ server:
 cors:
   originPatterns: ${FRONTEND_URL_1}
 
+app:
+  upload:
+    dir: ${UPLOAD_DIR}
+    base-path: ${UPLOAD_BASE_PATH}
+    base-url: ${UPLOAD_BASE_URL}
+
 spring:
   application:
     name: pitcherx
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
 
   config:
     import: optional:file:.env[.properties]
