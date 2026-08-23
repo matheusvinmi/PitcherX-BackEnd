@@ -1,19 +1,13 @@
 package com.pitcherx.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.pitcherx.dto.projeto.ProjetoRequestDTO;
 import com.pitcherx.dto.projeto.ProjetoResponseDTO;
@@ -45,6 +39,18 @@ public class ProjetoController {
     @Operation(description = "Endpoint para obter um projeto específico por ID")
 	public ResponseEntity<ProjetoResponseDTO> getProjetoById(@PathVariable Long id){
 		return ResponseEntity.status(HttpStatus.OK).body(projetoService.buscarProjetoPorId(id));
+	}
+
+	@GetMapping("/buscar")
+	@PreAuthorize("permitAll()")
+	@Operation(description = "Endpoint para buscar projetos com filtros opcionais")
+	public ResponseEntity<List<ProjetoResponseDTO>> buscarProjetos(
+			@RequestParam(required = false) String nome,
+			@RequestParam(required = false) String descricao,
+			@RequestParam(required = false) LocalDate dataInicioDe,
+			@RequestParam(required = false) LocalDate dataInicioAte) {
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(projetoService.buscarProjetos(nome, descricao, dataInicioDe, dataInicioAte));
 	}
 	
 	@PostMapping

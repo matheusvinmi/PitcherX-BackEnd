@@ -1,8 +1,11 @@
 package com.pitcherx.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
+import com.pitcherx.specification.ProjetoSpecification;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +45,19 @@ public class ProjetoService {
 		Projeto projeto = projetoRepository.findById(idProjeto)
 				.orElseThrow(() -> new EntityNotFoundException("Sem projeto com o ID informado!"));
 		return projetoMapper.toDTO(projeto);
+	}
+
+	@Transactional(readOnly = true)
+	public List<ProjetoResponseDTO> buscarProjetos(String nome, String descricao, LocalDate dataInicioDe, LocalDate dataInicioAte) {
+		Specification<Projeto> spec = Specification
+				.where(ProjetoSpecification.comNome(nome))
+				.and(ProjetoSpecification.comDescricao(descricao))
+				.and(ProjetoSpecification.comDataInicioApartirDe(dataInicioDe))
+				.and(ProjetoSpecification.comDataInicioEntre(dataInicioDe, dataInicioAte));
+
+		return projetoRepository.findAll(spec).stream()
+				.map(projetoMapper::toDTO)
+				.toList();
 	}
 	
 	@Transactional

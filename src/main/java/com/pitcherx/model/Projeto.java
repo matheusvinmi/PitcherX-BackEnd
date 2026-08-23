@@ -1,16 +1,12 @@
 package com.pitcherx.model;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -48,7 +44,10 @@ public class Projeto {
 	@Column(name = "is_active_projeto", nullable = false)
 	private Boolean active = true;
 	
-	@Column(name = "url_imagem_projeto", nullable = true)
+	@Column(name = "url_imagem_projeto")
 	private String urlImagemProjeto;
+
+	@OneToMany(mappedBy = "projeto", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<ProjetoUsuario> usuarios = new ArrayList<>();
 
 }
