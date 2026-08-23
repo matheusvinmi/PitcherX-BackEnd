@@ -34,14 +34,16 @@ public class UsuarioService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final TokenConfig tokenConfig;
+    private final EmailService emailService;
 
     public UsuarioService(UsuarioRepository usuarioRepository, UsuarioMapper usuarioMapper,
-    		RoleRepository roleRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, TokenConfig tokenConfig) {
+    		RoleRepository roleRepository, PasswordEncoder passwordEncoder, TokenConfig tokenConfig, EmailService emailService) {
         this.usuarioRepository = usuarioRepository;
         this.usuarioMapper = usuarioMapper;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
         this.tokenConfig = tokenConfig;
+        this.emailService = emailService;
      }
 
      @Transactional(readOnly = true)
@@ -73,6 +75,7 @@ public class UsuarioService {
         usuario.setRoles(Set.of(role));
 
         Usuario salvo = usuarioRepository.save(usuario);
+        emailService.enviarSaudacoes(usuario.getEmailUsuario(), usuario.getNomeUsuario());
         return usuarioMapper.toDTO(salvo);
      }
 
