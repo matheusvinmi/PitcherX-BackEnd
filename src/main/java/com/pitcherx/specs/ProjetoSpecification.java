@@ -1,4 +1,4 @@
-package com.pitcherx.specification;
+package com.pitcherx.specs;
 
 import com.pitcherx.model.Projeto;
 import org.springframework.data.jpa.domain.Specification;

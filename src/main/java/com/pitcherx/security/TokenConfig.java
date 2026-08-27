@@ -8,6 +8,7 @@ import com.pitcherx.model.Usuario;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 @Component
@@ -22,7 +23,7 @@ public class TokenConfig {
                 .withClaim("idUsuario", usuario.getIdUsuario())
                 .withSubject(usuario.getEmailUsuario())
                 .withClaim("roles", usuario.getRoles().stream().map(role -> role.getNomeRole().name()).toList())
-                .withExpiresAt(Instant.now().plusSeconds(3600)) // Token valido por 1 hora
+                .withExpiresAt(Instant.now().plus(30, ChronoUnit.DAYS))
                 .withIssuedAt(Instant.now())
                 .sign(algorithm);
     }

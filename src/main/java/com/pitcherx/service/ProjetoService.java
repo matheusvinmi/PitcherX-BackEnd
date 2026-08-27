@@ -3,7 +3,7 @@ package com.pitcherx.service;
 import java.time.LocalDate;
 import java.util.List;
 
-import com.pitcherx.specification.ProjetoSpecification;
+import com.pitcherx.specs.ProjetoSpecification;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;

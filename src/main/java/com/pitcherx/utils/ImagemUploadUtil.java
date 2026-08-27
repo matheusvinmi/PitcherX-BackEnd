@@ -65,7 +65,7 @@ public class ImagemUploadUtil {
         }
 
         if (arquivo.getSize() > TAMANHO_MAXIMO_BYTES) {
-            throw new IllegalArgumentException("O arquivo excede o tamanho máximo permitido (5MB).");
+            throw new IllegalArgumentException("O arquivo excede o tamanho máximo permitido de 10MB.");
         }
 
         String extensao = obterExtensao(arquivo.getOriginalFilename());
