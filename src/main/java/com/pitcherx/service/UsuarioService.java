@@ -76,7 +76,7 @@ public class UsuarioService {
         usuario.setRoles(Set.of(role));
 
         Usuario salvo = usuarioRepository.save(usuario);
-        emailService.enviarSaudacoes(usuario.getEmailUsuario(), usuario.getNomeUsuario());
+        //emailService.enviarSaudacoes(usuario.getEmailUsuario(), usuario.getNomeUsuario());
         return usuarioMapper.toDTO(salvo);
      }
 

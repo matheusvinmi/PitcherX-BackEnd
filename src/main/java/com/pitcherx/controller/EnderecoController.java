@@ -50,7 +50,7 @@ public class EnderecoController {
 	
 	@PostMapping
     @Operation(summary = "Cadastro de endereço", description = "Este endpoint faz o cadastro de endereço.")
-	@PreAuthorize("hasAnyRole('ADMIN','USUARIO', 'EMPRESARIO')")
+	@PreAuthorize("hasAnyRole('ADMIN','USUARIO', 'EMPRESA')")
 	public ResponseEntity<EnderecoResponseDTO> createEndereco(@Valid @RequestBody EnderecoRequestDTO enderecoRequestDTO){
 		EnderecoResponseDTO enderecoResponseDTO = enderecoService.criarEndereco(enderecoRequestDTO);
 		return ResponseEntity.status(HttpStatus.CREATED).body(enderecoResponseDTO);
@@ -58,7 +58,7 @@ public class EnderecoController {
 	
 	@PutMapping("/{id}")
     @Operation(summary = "Atualização de endereço", description = "Este endpoint faz a atualização de endereço através do ID.")
-	@PreAuthorize("hasAnyRole('ADMIN','USUARIO', 'EMPRESARIO')")
+	@PreAuthorize("hasAnyRole('ADMIN','USUARIO', 'EMPRESA')")
 	public ResponseEntity<EnderecoResponseDTO> updateEndereco(@PathVariable Long id, @Valid @RequestBody EnderecoRequestDTO enderecoRequestDTO){
 		EnderecoResponseDTO enderecoResponseDTO = enderecoService.atualizarEndereco(id, enderecoRequestDTO);
 		return ResponseEntity.status(HttpStatus.OK).body(enderecoResponseDTO);
@@ -66,7 +66,7 @@ public class EnderecoController {
 	
 	@DeleteMapping("/{id}")
     @Operation(summary = "Remover um endereço", description = "Este endpoint faz a remoção de endereço através do ID.")
-	@PreAuthorize("hasAnyRole('ADMIN','USUARIO', 'EMPRESARIO')")
+	@PreAuthorize("hasAnyRole('ADMIN','USUARIO', 'EMPRESA')")
 	public ResponseEntity<Void> deleteEndereco(@PathVariable Long id){
 		enderecoService.deletarEndereco(id);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

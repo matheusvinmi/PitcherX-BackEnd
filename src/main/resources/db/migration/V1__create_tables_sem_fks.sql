@@ -1,6 +1,6 @@
 CREATE TABLE especialidade (
     id_especialidade BIGSERIAL PRIMARY KEY,
-    nome_especialidade VARCHAR(255) NOT NULL UNIQUE
+    nome_especialidade VARCHAR(120) NOT NULL UNIQUE
 );
 
 CREATE TABLE area(
@@ -26,9 +26,6 @@ CREATE TABLE tipo_projeto(
     nome_tipo_projeto VARCHAR(255) NOT NULL UNIQUE,
     descricao_tipo_projeto TEXT NOT NULL
 );
-
-
-
 
 CREATE TABLE tipo_vinculo (
     id_tipo_vinculo BIGSERIAL PRIMARY KEY,

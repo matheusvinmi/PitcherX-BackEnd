@@ -27,17 +27,23 @@ public class Endereco {
 	@Column(name = "id_endereco")
 	private Long idEndereco;
 	
-	@Column(name = "cep", nullable = false)
+	@Column(name = "cep", nullable = false, length = 8)
 	private String cep;
 	
-	@Column(name = "rua_endereco", nullable = false)
-	private String ruaEndereco;
+	@Column(name = "uf", nullable = false, length = 2)
+	private String uf;
 	
-	@Column(name = "bairro_endereco", nullable = false)
-	private String bairroEndereco;
+	@Column(name = "bairro", nullable = false)
+	private String bairro;
 	
-	@Column(name = "numero_endereco", nullable = false)
-	private Integer numeroEndereco;
+	@Column(name = "logradouro", nullable = false)
+	private String logradouro;
+	
+	@Column(name = "complemento")
+	private String complemento;
+	
+	@Column(name = "numero_casa", nullable = false)
+	private Integer numeroCasa;
 	
 	@ManyToOne
 	@JoinColumn(name = "usuario_id", nullable = false)
