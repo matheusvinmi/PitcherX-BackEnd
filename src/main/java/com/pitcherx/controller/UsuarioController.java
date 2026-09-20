@@ -41,7 +41,7 @@
         }
 
         @GetMapping("/{id}")
-        @PreAuthorize("hasRole('ADMIN')")
+        @PreAuthorize("permitAll()")
         @Operation(description = "Este endpoint faz a busca de usuário através do ID.")
         public ResponseEntity<UsuarioResponseDTO> getUsuarioById(Long id) {
             return ResponseEntity.status(HttpStatus.OK).body(usuarioService.buscarUsuarioPorId(id));
