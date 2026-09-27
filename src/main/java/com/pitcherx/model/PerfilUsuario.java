@@ -25,6 +25,9 @@ public class PerfilUsuario {
 	@Column(name = "identificador", nullable = false, length = 18)
 	private String identificador;
 	
+	@Column(name = "url_banner_perfil")
+	private String urlBanner;
+	
 	@ManyToOne
 	@JoinColumn(name = "especialidade_id", nullable = false)
 	private Especialidade especialidade;
