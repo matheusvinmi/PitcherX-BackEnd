@@ -16,7 +16,7 @@ spring:
   servlet:
     multipart:
       max-file-size: 10MB
-      max-request-size: 10MB
+      max-request-size: 100MB
 
   config:
     import: optional:file:.env[.properties]
@@ -28,7 +28,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     show-sql: true
     properties:
       hibernate:
@@ -69,6 +69,5 @@ logging:
         type:
           descriptor:
             sql: WARN
-
 
 

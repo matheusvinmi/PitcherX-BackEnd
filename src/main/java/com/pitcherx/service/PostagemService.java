@@ -10,11 +10,15 @@ import com.pitcherx.dto.postagem.PostagemRequestDTO;
 import com.pitcherx.dto.postagem.PostagemResponseDTO;
 import com.pitcherx.mapper.PostagemMapper;
 import com.pitcherx.model.Postagem;
+import com.pitcherx.model.PostagemImagem;
 import com.pitcherx.model.Usuario;
 import com.pitcherx.repository.PostagemRepository;
 import com.pitcherx.repository.UsuarioRepository;
+import com.pitcherx.utils.ImagemUploadUtil;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class PostagemService {
@@ -22,12 +26,14 @@ public class PostagemService {
 	private final PostagemRepository postagemRepository;
 	private final PostagemMapper postagemMapper;
 	private final UsuarioRepository usuarioRepository;
+	private final ImagemUploadUtil imagemUploadUtil;
 	
 	public PostagemService(PostagemRepository postagemRepository, PostagemMapper postagemMapper,
-			UsuarioRepository usuarioRepository) {
+			UsuarioRepository usuarioRepository, ImagemUploadUtil imagemUploadUtil) {
 		this.postagemRepository = postagemRepository;
 		this.postagemMapper = postagemMapper;
 		this.usuarioRepository = usuarioRepository;
+		this.imagemUploadUtil = imagemUploadUtil;
 	}
 	
 	@Transactional(readOnly = true)
@@ -70,14 +76,74 @@ public class PostagemService {
 		return postagemMapper.toDTO(salvo);
 	}
 	
+	@Transactional
 	public void deletarPostagem(Long idPostagem) {
-		if (!postagemRepository.existsById(idPostagem)) {
-			throw new EntityNotFoundException("Sem postagem com o ID informado!");
-		}
+		Postagem postagem = postagemRepository.findById(idPostagem)
+				.orElseThrow(() -> new EntityNotFoundException("Sem postagem com o ID informado!"));
 		try {
-			postagemRepository.deleteById(idPostagem);
+			List<String> urlsAntigas = obterUrlsImagem(postagem);
+			postagemRepository.delete(postagem);
+			imagemUploadUtil.limparAposTransacao(urlsAntigas, List.of());
 		} catch (DataIntegrityViolationException e) {
             throw new IllegalStateException("Não é possível deletar a postagem, pois ela está associada a outras entidades!");
 		}
+	}
+
+	@Transactional
+	public PostagemResponseDTO substituirImagens(Long idPostagem, Usuario usuarioLogado, List<MultipartFile> arquivos) {
+		Postagem postagem = postagemRepository.findById(idPostagem)
+				.orElseThrow(() -> new EntityNotFoundException("Sem postagem com o ID informado!"));
+		validarAcesso(postagem, usuarioLogado);
+
+		List<String> urlsNovas = imagemUploadUtil.salvarImagens(arquivos);
+		List<String> urlsAntigas = obterUrlsImagem(postagem);
+		imagemUploadUtil.limparAposTransacao(urlsAntigas, urlsNovas);
+		postagem.getImagens().clear();
+		postagemRepository.flush();
+		adicionarImagens(postagem, urlsNovas);
+		return postagemMapper.toDTO(postagemRepository.save(postagem));
+	}
+
+	@Transactional
+	public void removerImagens(Long idPostagem, Usuario usuarioLogado) {
+		Postagem postagem = postagemRepository.findById(idPostagem)
+				.orElseThrow(() -> new EntityNotFoundException("Sem postagem com o ID informado!"));
+		validarAcesso(postagem, usuarioLogado);
+
+		List<String> urlsAntigas = obterUrlsImagem(postagem);
+		imagemUploadUtil.limparAposTransacao(urlsAntigas, List.of());
+		postagem.getImagens().clear();
+		postagem.setUrlImagemPostagem(null);
+		postagemRepository.save(postagem);
+	}
+
+	private void validarAcesso(Postagem postagem, Usuario usuarioLogado) {
+		boolean administrador = usuarioLogado.getAuthorities().stream()
+				.map(GrantedAuthority::getAuthority)
+				.anyMatch("ROLE_ADMIN"::equals);
+		if (!administrador && !postagem.getUsuario().getIdUsuario().equals(usuarioLogado.getIdUsuario())) {
+			throw new SecurityException("Você não tem permissão para alterar as imagens desta postagem.");
+		}
+	}
+
+	private List<String> obterUrlsImagem(Postagem postagem) {
+		List<String> urls = postagem.getImagens().stream()
+				.map(PostagemImagem::getUrlImagem)
+				.collect(java.util.stream.Collectors.toCollection(java.util.ArrayList::new));
+		if (postagem.getUrlImagemPostagem() != null && !urls.contains(postagem.getUrlImagemPostagem())) {
+			urls.add(postagem.getUrlImagemPostagem());
+		}
+		return urls;
+	}
+
+	private void adicionarImagens(Postagem postagem, List<String> urls) {
+		for (int i = 0; i < urls.size(); i++) {
+			PostagemImagem imagem = new PostagemImagem();
+			imagem.setPostagem(postagem);
+			imagem.setUrlImagem(urls.get(i));
+			imagem.setOrdem(i);
+			postagem.getImagens().add(imagem);
+		}
+		postagem.setUrlImagemPostagem(urls.getFirst());
 	}
 }

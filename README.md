@@ -90,3 +90,14 @@ docker-compose down
    ```
 
 3. **Acesse a documentação em:** http://localhost:8080/swagger-ui/index.html
+
+## Upload de imagens
+
+As imagens são gravadas no filesystem configurado por `UPLOAD_DIR` e servidas sob `UPLOAD_BASE_PATH`, com URLs montadas a partir de `UPLOAD_BASE_URL`. Cada imagem pode ter até 10 MB e deve ser JPEG, PNG ou WebP; galerias aceitam de 1 a 10 arquivos. O tamanho máximo de uma requisição multipart é 100 MB.
+
+- Foto do usuário: `POST /usuario/{id}/foto` e `DELETE /usuario/{id}/foto`, com o campo multipart `arquivo`.
+- Banner do perfil: `POST /perfil-usuario/{id}/banner` e `DELETE /perfil-usuario/{id}/banner`, com o campo multipart `arquivo`.
+- Galeria de postagem: `PUT /postagem/{id}/imagens` e `DELETE /postagem/{id}/imagens`.
+- Galeria de projeto: `PUT /projeto/{id}/imagens` e `DELETE /projeto/{id}/imagens`.
+
+Os endpoints de substituição de galeria recebem um campo multipart `arquivos` repetido uma vez por imagem. A ordem dos arquivos enviados define a ordem do carrossel. Somente o proprietário do conteúdo (ou um administrador) pode modificar imagens. Respostas de postagem e projeto incluem a lista `imagens` e mantêm os campos URL antigos apontando para a primeira imagem.

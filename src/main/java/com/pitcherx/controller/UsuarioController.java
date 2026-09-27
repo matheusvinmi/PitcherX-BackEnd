@@ -122,14 +122,14 @@
         }
 
         @PostMapping(value = "/{id}/foto", consumes = "multipart/form-data")
-        @PreAuthorize("hasAnyRole('ADMIN', 'USUARIO', 'EMPRESA')")
+        @PreAuthorize("hasRole('ADMIN') or #id == principal.idUsuario")
         @Operation(description = "Endpoint para atualizar a foto de perfil do usuário")
         public ResponseEntity<UsuarioResponseDTO> atualizarFoto(@PathVariable Long id, @RequestParam("arquivo") MultipartFile arquivo) {
             return ResponseEntity.status(HttpStatus.OK).body(usuarioService.atualizarFotoUsuario(id, arquivo));
         }
 
         @DeleteMapping("/{id}/foto")
-        @PreAuthorize("hasAnyRole('ADMIN', 'USUARIO', 'EMPRESA')")
+        @PreAuthorize("hasRole('ADMIN') or #id == principal.idUsuario")
         @Operation(description = "Endpoint para remover a foto de perfil do usuário")
         public ResponseEntity<Void> removerFoto(@PathVariable Long id) {
             usuarioService.removerFotoUsuario(id);

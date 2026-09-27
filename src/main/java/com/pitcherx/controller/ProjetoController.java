@@ -7,10 +7,13 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.pitcherx.dto.projeto.ProjetoRequestDTO;
 import com.pitcherx.dto.projeto.ProjetoResponseDTO;
+import com.pitcherx.model.Usuario;
 import com.pitcherx.service.ProjetoService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -67,6 +70,24 @@ public class ProjetoController {
 	public ResponseEntity<ProjetoResponseDTO> updateProjeto(@PathVariable Long id, @Valid @RequestBody ProjetoRequestDTO projetoRequestDTO){
 		ProjetoResponseDTO projetoResponseDTO = projetoService.atualizarProjeto(id, projetoRequestDTO);
 		return ResponseEntity.status(HttpStatus.OK).body(projetoResponseDTO);
+	}
+
+	@PutMapping(value = "/{id}/imagens", consumes = "multipart/form-data")
+	@PreAuthorize("hasAnyRole('USUARIO', 'EMPRESA', 'ADMIN')")
+	@Operation(summary = "Substituir imagens do projeto", description = "Envia de 1 a 10 imagens em ordem para substituir a galeria.")
+	public ResponseEntity<ProjetoResponseDTO> substituirImagens(
+			@PathVariable Long id,
+			@RequestParam("arquivos") List<MultipartFile> arquivos,
+			@AuthenticationPrincipal Usuario usuario) {
+		return ResponseEntity.ok(projetoService.substituirImagens(id, usuario, arquivos));
+	}
+
+	@DeleteMapping("/{id}/imagens")
+	@PreAuthorize("hasAnyRole('USUARIO', 'EMPRESA', 'ADMIN')")
+	@Operation(summary = "Remover imagens do projeto", description = "Remove todas as imagens da galeria.")
+	public ResponseEntity<Void> removerImagens(@PathVariable Long id, @AuthenticationPrincipal Usuario usuario) {
+		projetoService.removerImagens(id, usuario);
+		return ResponseEntity.noContent().build();
 	}
 	
 	@DeleteMapping("/{id}")

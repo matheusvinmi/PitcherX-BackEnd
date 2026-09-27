@@ -2,9 +2,7 @@ package com.pitcherx.model;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -49,5 +47,9 @@ public class Projeto {
 
 	@OneToMany(mappedBy = "projeto", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<ProjetoUsuario> usuarios = new ArrayList<>();
+
+	@OneToMany(mappedBy = "projeto", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OrderBy("ordem ASC")
+	private List<ProjetoImagem> imagens = new ArrayList<>();
 
 }

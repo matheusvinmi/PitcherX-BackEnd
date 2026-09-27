@@ -8,10 +8,13 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.pitcherx.dto.perfilUsuario.PerfilUsuarioRequestDTO;
 import com.pitcherx.dto.perfilUsuario.PerfilUsuarioResponseDTO;
+import com.pitcherx.model.Usuario;
 import com.pitcherx.service.PerfilUsuarioService;
 
 @RestController
@@ -59,5 +62,23 @@ public class PerfilUsuarioController {
 	public ResponseEntity<Void> deletarPerfilUsuario(@PathVariable Long id){
 		perfilUsuarioService.deletarPerfilUsuario(id);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+	}
+
+	@PostMapping(value = "/{id}/banner", consumes = "multipart/form-data")
+	@PreAuthorize("hasAnyRole('ADMIN', 'USUARIO', 'EMPRESA')")
+	@Operation(description = "Endpoint para atualizar o banner do perfil")
+	public ResponseEntity<PerfilUsuarioResponseDTO> atualizarBanner(
+			@PathVariable Long id,
+			@RequestParam("arquivo") MultipartFile arquivo,
+			@AuthenticationPrincipal Usuario usuario) {
+		return ResponseEntity.ok(perfilUsuarioService.atualizarBanner(id, usuario, arquivo));
+	}
+
+	@DeleteMapping("/{id}/banner")
+	@PreAuthorize("hasAnyRole('ADMIN', 'USUARIO', 'EMPRESA')")
+	@Operation(description = "Endpoint para remover o banner do perfil")
+	public ResponseEntity<Void> removerBanner(@PathVariable Long id, @AuthenticationPrincipal Usuario usuario) {
+		perfilUsuarioService.removerBanner(id, usuario);
+		return ResponseEntity.noContent().build();
 	}
 }

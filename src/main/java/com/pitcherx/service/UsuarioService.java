@@ -112,12 +112,14 @@ public class UsuarioService {
 
      @Transactional
      public void deletarUsuario(Long idUsuario){
-        if (!usuarioRepository.existsById(idUsuario)){
-            throw new EntityNotFoundException("Sem usuário com o ID informado!");
-        }
-        try {
-            usuarioRepository.deleteById(idUsuario);
-        } catch (DataIntegrityViolationException e) {
+         Usuario usuario = usuarioRepository.findById(idUsuario)
+                 .orElseThrow(() -> new EntityNotFoundException("Sem usuário com o ID informado!"));
+         try {
+             usuarioRepository.delete(usuario);
+             imagemUploadUtil.limparAposTransacao(
+                     usuario.getUrlImagemUsuario() == null ? List.of() : List.of(usuario.getUrlImagemUsuario()),
+                     List.of());
+         } catch (DataIntegrityViolationException e) {
             throw new IllegalStateException("Não é possível deletar o usuário, pois ele está associada a outras entidades.!");
         }
 
@@ -187,9 +189,10 @@ public class UsuarioService {
         Usuario usuario = usuarioRepository.findById(idUsuario)
                 .orElseThrow(() -> new EntityNotFoundException("Sem usuário com o ID informado!"));
 
-        imagemUploadUtil.deletarImagem(usuario.getUrlImagemUsuario());
-
         String novaUrl = imagemUploadUtil.salvarImagem(arquivo);
+        imagemUploadUtil.limparAposTransacao(
+                usuario.getUrlImagemUsuario() == null ? List.of() : List.of(usuario.getUrlImagemUsuario()),
+                List.of(novaUrl));
         usuario.setUrlImagemUsuario(novaUrl);
 
         Usuario salvo = usuarioRepository.save(usuario);
@@ -201,7 +204,9 @@ public class UsuarioService {
         Usuario usuario = usuarioRepository.findById(idUsuario)
                 .orElseThrow(() -> new EntityNotFoundException("Sem usuário com o ID informado!"));
 
-        imagemUploadUtil.deletarImagem(usuario.getUrlImagemUsuario());
+        imagemUploadUtil.limparAposTransacao(
+                usuario.getUrlImagemUsuario() == null ? List.of() : List.of(usuario.getUrlImagemUsuario()),
+                List.of());
         usuario.setUrlImagemUsuario(null);
 
         usuarioRepository.save(usuario);

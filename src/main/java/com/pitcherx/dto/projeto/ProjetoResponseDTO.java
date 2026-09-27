@@ -1,6 +1,7 @@
 package com.pitcherx.dto.projeto;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -16,7 +17,8 @@ public record ProjetoResponseDTO(
 		LocalDate dataFimProjeto,
 		Long tipoProjetoId,
 		Boolean active,
-		String urlImagemProjeto
+		String urlImagemProjeto,
+		List<String> imagens
 		) {
 
 }
