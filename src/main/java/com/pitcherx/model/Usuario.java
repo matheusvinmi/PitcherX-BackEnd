@@ -1,6 +1,7 @@
 package com.pitcherx.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,6 +36,7 @@ public class Usuario implements UserDetails {
     @Column(name = "nome_usuario", nullable = false)
     private String nomeUsuario;
 
+    @Email
     @Column(name = "email_usuario", nullable = false, unique = true)
     private String emailUsuario;
 
