@@ -52,7 +52,7 @@ public class Usuario implements UserDetails {
     @Column(name = "is_active_usuario", nullable = false)
     private Boolean active = true;
     
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "usuario_role",
             joinColumns = @JoinColumn(name = "id_usuario"),
