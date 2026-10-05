@@ -28,6 +28,10 @@ public class PerfilUsuario {
 	@Column(name = "url_banner_perfil")
 	private String urlBanner;
 	
+	@Lob
+	@Column(columnDefinition = "TEXT")
+	private String biografia;
+	
 	@ManyToOne
 	@JoinColumn(name = "especialidade_id", nullable = false)
 	private Especialidade especialidade;

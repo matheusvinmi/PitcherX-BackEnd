@@ -60,7 +60,7 @@ public class UsuarioService {
          return usuarioMapper.toDTO(usuario);
      }
 
-     @Transactional
+@Transactional
     public UsuarioResponseDTO criarUsuario(UsuarioRequestDTO usuarioRequestDTO){
 
         if (usuarioRepository.existsUsuarioByEmailUsuario(usuarioRequestDTO.emailUsuario())){
@@ -68,16 +68,25 @@ public class UsuarioService {
         }
         
         Role role = roleRepository.findRoleByNomeRole(RoleType.USUARIO)
-        		.orElseThrow(() -> new RuntimeException("Se role com o nome informado!"));
-
+            .orElseThrow(() -> new RuntimeException("Se role com o nome informado!"));
+        
         Usuario usuario = usuarioMapper.toEntity(usuarioRequestDTO);
         String senhaHash = passwordEncoder.encode(usuarioRequestDTO.senhaUsuario());
         usuario.setSenhaUsuario(senhaHash);
         usuario.setRoles(Set.of(role));
 
+        String codigoVerificacao = gerarCodigoVerificacao();
+        usuario.setCodigoVerificacao(codigoVerificacao);
+        usuario.setVerificado(false);
+        usuario.setActive(false);
+
         Usuario salvo = usuarioRepository.save(usuario);
-        emailService.enviarSaudacoes(usuario.getEmailUsuario(), usuario.getNomeUsuario());
+        emailService.enviarCodigoVerificacao(usuario.getEmailUsuario(), usuario.getNomeUsuario(), codigoVerificacao);
         return usuarioMapper.toDTO(salvo);
+     }
+
+    private String gerarCodigoVerificacao() {
+        return String.format("%06d", new java.util.Random().nextInt(999999));
      }
 
      @Transactional
@@ -109,6 +118,23 @@ public class UsuarioService {
             Usuario salvo = usuarioRepository.save(usuario);
             return usuarioMapper.toDTO(salvo);
      }
+
+     @Transactional
+      public UsuarioResponseDTO verificarConta(String codigoVerificacao){
+          Usuario usuario = usuarioRepository.findByCodigoVerificacao(codigoVerificacao)
+                  .orElseThrow(() -> new IllegalArgumentException("Código de verificação inválido!"));
+
+          if (usuario.isVerificado()) {
+              throw new IllegalArgumentException("Conta já foi verificada!");
+          }
+
+          usuario.setVerificado(true);
+          usuario.setActive(true);
+          usuario.setCodigoVerificacao(null);
+
+          Usuario salvo = usuarioRepository.save(usuario);
+          return usuarioMapper.toDTO(salvo);
+      }
 
      @Transactional
      public void deletarUsuario(Long idUsuario){

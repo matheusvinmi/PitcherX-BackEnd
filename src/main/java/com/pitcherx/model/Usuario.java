@@ -49,8 +49,14 @@ public class Usuario implements UserDetails {
     @Column(name = "url_imagem_usuario")
     private String urlImagemUsuario;
 
+    @Column(name = "codigo_verificacao_usuario")
+    private String codigoVerificacao;
+
+    @Column(name = "verificado_usuario")
+    private Boolean verificado = false;
+
     @Column(name = "is_active_usuario", nullable = false)
-    private Boolean active = true;
+    private Boolean active = false;
     
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -108,6 +114,10 @@ public class Usuario implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return this.active != null && this.active;
+        return this.verificado != null && this.verificado;
+    }
+
+    public boolean isVerificado() {
+        return this.verificado != null && this.verificado;
     }
 }

@@ -1,6 +1,7 @@
     package com.pitcherx.controller;
 
     import com.pitcherx.dto.usuario.*;
+import com.pitcherx.dto.usuario.ValidarCodigoVerificacaoRequestDTO;
 
     import com.pitcherx.dto.usuario.esqueciSenha.EsqueciSenhaRequestDTO;
     import com.pitcherx.dto.usuario.esqueciSenha.ResetarSenhaRequestDTO;
@@ -52,6 +53,13 @@
         public ResponseEntity<UsuarioResponseDTO> saveUsuario(@Valid @RequestBody UsuarioRequestDTO usuarioRequestDTO) {
             UsuarioResponseDTO usuarioResponseDTO = usuarioService.criarUsuario(usuarioRequestDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(usuarioResponseDTO);
+        }
+
+        @PostMapping("/verificar-conta")
+        @Operation(description = "Este endpoint verifica o código de verificação da conta do usuário.")
+        public ResponseEntity<UsuarioResponseDTO> verificarConta(@Valid @RequestBody ValidarCodigoVerificacaoRequestDTO dto) {
+            UsuarioResponseDTO usuarioResponseDTO = usuarioService.verificarConta(dto.getCodigoVerificacao());
+            return ResponseEntity.status(HttpStatus.OK).body(usuarioResponseDTO);
         }
 
         @PutMapping("/{id}")
