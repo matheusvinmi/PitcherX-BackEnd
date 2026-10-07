@@ -18,7 +18,10 @@ public record ProjetoResponseDTO(
 		Long tipoProjetoId,
 		Boolean active,
 		String urlImagemProjeto,
-		List<String> imagens
+		List<String> imagens,
+		Double metaFinanceira,
+		Double valorArrecadado,
+		String riscoProjeto
 		) {
 
 }

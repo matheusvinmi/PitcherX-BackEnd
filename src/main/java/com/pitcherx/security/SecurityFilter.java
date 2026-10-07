@@ -2,7 +2,7 @@ package com.pitcherx.security;
 
 import com.pitcherx.model.Usuario;
 import com.pitcherx.repository.UsuarioRepository;
-import jakarta.persistence.EntityNotFoundException;
+import com.pitcherx.security.JwtAuthenticationException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -41,7 +41,7 @@ public class SecurityFilter extends OncePerRequestFilter {
                 JWTUserData userData = userDataOpt.get();
 
                 Usuario usuario = usuarioRepository.findUserByEmailUsuario(userData.emailUsuario())
-                        .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado!"));
+                        .orElseThrow(() -> new JwtAuthenticationException("Usuário não encontrado!"));
 
                 Set<SimpleGrantedAuthority> authorities = Optional.ofNullable(userData.roles())
                         .orElse(Collections.emptySet())

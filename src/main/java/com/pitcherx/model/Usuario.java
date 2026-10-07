@@ -114,7 +114,7 @@ public class Usuario implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return this.verificado != null && this.verificado;
+        return this.active != null && this.active;
     }
 
     public boolean isVerificado() {

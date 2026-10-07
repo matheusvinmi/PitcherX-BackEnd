@@ -27,7 +27,13 @@ public record ProjetoRequestDTO(
 		LocalDate dataFimProjeto,
 		
 		@NotNull(message = "O tipo de projeto é obrigatório!") Long tipoProjetoId,
-		String urlImagemProjeto
+		String urlImagemProjeto,
+		
+		@NotNull(message = "A meta financeira é obrigatória!") Double metaFinanceira,
+		
+		Double valorArrecadado,
+		
+		String riscoProjeto
 		) {
 
 }

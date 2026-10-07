@@ -1,29 +1,30 @@
 package com.pitcherx.security;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Optional;
+
+import org.springframework.stereotype.Component;
+
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.pitcherx.model.Usuario;
-import org.springframework.stereotype.Component;
-
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.Optional;
 
 @Component
 public class TokenConfig {
 
-    private String secretKey = "secretKey";
+    private static final String SECRET_KEY = System.getProperty("jwt.secret.key", "secretKey");
 
-    Algorithm algorithm = Algorithm.HMAC256(secretKey);
+    private final Algorithm algorithm = Algorithm.HMAC256(SECRET_KEY);
 
     public String generateToken(Usuario usuario) {
         return JWT.create()
                 .withClaim("idUsuario", usuario.getIdUsuario())
                 .withSubject(usuario.getEmailUsuario())
                 .withClaim("roles", usuario.getRoles().stream().map(role -> role.getNomeRole().name()).toList())
-                .withExpiresAt(Instant.now().plus(30, ChronoUnit.DAYS))
+                .withExpiresAt(Instant.now().plus(365, ChronoUnit.DAYS))
                 .withIssuedAt(Instant.now())
                 .sign(algorithm);
     }
