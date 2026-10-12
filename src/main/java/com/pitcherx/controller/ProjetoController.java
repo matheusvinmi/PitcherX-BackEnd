@@ -39,10 +39,12 @@ public class ProjetoController {
 	}
 	
 	@GetMapping("/{id}")
-	@PreAuthorize("permitAll()")
-    @Operation(description = "Endpoint para obter um projeto específico por ID")
-	public ResponseEntity<ProjetoResponseDTO> getProjetoById(@PathVariable Long id){
-		return ResponseEntity.status(HttpStatus.OK).body(projetoService.buscarProjetoPorId(id));
+	@PreAuthorize("authenticated()")
+    @Operation(description = "Endpoint para obter um projeto específico por ID. Apenas usuários com vínculo aceito podem visualizar.")
+	public ResponseEntity<ProjetoResponseDTO> getProjetoById(@PathVariable Long id,
+			@AuthenticationPrincipal Usuario usuario) {
+		Long usuarioId = usuario != null ? usuario.getIdUsuario() : null;
+		return ResponseEntity.status(HttpStatus.OK).body(projetoService.buscarProjetoPorId(id, usuarioId));
 	}
 
 	@GetMapping("/buscar")

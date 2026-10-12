@@ -69,11 +69,41 @@ private final ProjetoRepository projetoRepository;
 	}
 	
 	@Transactional(readOnly = true)
-	public ProjetoResponseDTO buscarProjetoPorId(Long idProjeto) {
+	public ProjetoResponseDTO buscarProjetoPorId(Long idProjeto, Long usuarioId) {
 		Projeto projeto = projetoRepository.findById(idProjeto)
 				.orElseThrow(() -> new EntityNotFoundException("Sem projeto com o ID informado!"));
+		
+		// Verificar se o usuário tem acesso ao projeto
+		if (usuarioId != null) {
+			validarAcessoProjeto(projeto, usuarioId);
+		}
+		
 		return projetoMapper.toDTO(projeto);
 	}
+
+    private void validarAcessoProjeto(Projeto projeto, Long usuarioId) {
+        // Buscar vínculo do usuário com este projeto
+        List<ProjetoUsuario> pusu = projeto.getUsuarios().stream()
+                .filter(pu -> pu.getUsuario().getIdUsuario().equals(usuarioId))
+                .collect(java.util.stream.Collectors.toList());
+        
+        if (pusu.isEmpty()) {
+            throw new SecurityException("Você não tem permissão para visualizar este projeto. É necessário aceitar os termos de vinculo.");
+        }
+        
+        ProjetoUsuario projUser = pusu.get(0);
+        
+        // Usuário tem acesso se aceitou termos OR tem vínculo VISUALIZADOR ou superior
+        boolean podeAcessar = projUser.getAceitouTermos() != null && projUser.getAceitouTermos()
+                || projUser.getTipoVinculo().getNomeTipoVinculo().equals("VISUALIZADOR")
+                || projUser.getTipoVinculo().getNomeTipoVinculo().equals("SOCIO")
+                || projUser.getTipoVinculo().getNomeTipoVinculo().equals("INVESTIDOR")
+                || projUser.getTipoVinculo().getNomeTipoVinculo().equals("CRIADOR");
+        
+        if (!podeAcessar) {
+            throw new SecurityException("Você não tem permissão para visualizar este projeto. É necessário aceitar os termos de vinculo.");
+        }
+    }
 
 	@Transactional(readOnly = true)
 	public List<ProjetoResponseDTO> buscarProjetos(String nome, String descricao, LocalDate dataInicioDe, LocalDate dataInicioAte) {

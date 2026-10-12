@@ -17,8 +17,8 @@
             <h2>Solicitação Recusada</h2>
         </div>
         <div class="content">
-            <p>Olá <strong>${nomeSolicitante}</strong>,</p>
-            <p>Infelizmente, sua solicitação para se tornar vínculo no projeto <strong>${nomeProjeto}</strong> foi <strong>recusada</strong> pelo criador <strong>${nomeCriador}</strong>.</p>
+            <p>Olá <strong th:text="${nomeSolicitante}">Nome do Solicitante</strong>,</p>
+            <p>Infelizmente, sua solicitação para se tornar vínculo no projeto <strong th:text="${nomeProjeto}">Nome do Projeto</strong> foi <strong>recusada</strong> pelo criador <strong th:text="${nomeCriador}">Nome do Criador</strong>.</p>
             <p>Você pode entrar em contato diretamente com o criador para discutir outras oportunidades ou tentar novamente no futuro.</p>
             <p>Atenciosamente,<br/>Equipe PitcherX</p>
         </div>

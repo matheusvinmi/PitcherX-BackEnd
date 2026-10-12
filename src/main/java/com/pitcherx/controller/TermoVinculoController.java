@@ -5,6 +5,7 @@ import com.pitcherx.dto.termoVinculo.TermoVinculoResponseDTO;
 import com.pitcherx.dto.projetoUsuario.ProjetoUsuarioResponseDTO;
 import com.pitcherx.model.Projeto;
 import com.pitcherx.model.Usuario;
+import com.pitcherx.service.EmailService;
 import com.pitcherx.service.ProjetoUsuarioService;
 import com.pitcherx.service.TermoVinculoService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,11 +26,14 @@ public class TermoVinculoController {
 
     private final TermoVinculoService termoVinculoService;
     private final ProjetoUsuarioService projetoUsuarioService;
+    private final EmailService emailService;
 
     public TermoVinculoController(TermoVinculoService termoVinculoService,
-                                  ProjetoUsuarioService projetoUsuarioService) {
+                                   ProjetoUsuarioService projetoUsuarioService,
+                                   EmailService emailService) {
         this.termoVinculoService = termoVinculoService;
         this.projetoUsuarioService = projetoUsuarioService;
+        this.emailService = emailService;
     }
 
     @GetMapping
@@ -37,6 +41,13 @@ public class TermoVinculoController {
     @PreAuthorize("permitAll()")
     public ResponseEntity<List<TermoVinculoResponseDTO>> getTermosVinculo() {
         return ResponseEntity.status(HttpStatus.OK).body(termoVinculoService.listarTermosVinculo());
+    }
+
+    @GetMapping("/projeto/{projetoId}")
+    @Operation(description = "Este endpoint é responsável por listar os termos de vínculo por projeto.")
+    @PreAuthorize("permitAll()")
+    public ResponseEntity<List<TermoVinculoResponseDTO>> getTermosVinculoPorProjeto(@PathVariable Long projetoId) {
+        return ResponseEntity.status(HttpStatus.OK).body(termoVinculoService.listarTermosPorProjeto(projetoId));
     }
 
     @GetMapping("/{id}")
@@ -59,8 +70,22 @@ public class TermoVinculoController {
     @PreAuthorize("permitAll()")
     public ResponseEntity<ProjetoUsuarioResponseDTO> aceitarTermos(@PathVariable Long projetoId,
                                                                  @RequestParam("termoIds") List<Long> termoIds,
-                                                             @AuthenticationPrincipal Usuario usuario) {
+                                                                @AuthenticationPrincipal Usuario usuario) {
         ProjetoUsuarioResponseDTO resultado = projetoUsuarioService.aceitarTermos(projetoId, usuario.getIdUsuario(), termoIds);
+        
+        // Enviar email de notificação
+        try {
+            String emailUsuario = usuario.getEmailUsuario();
+            String nomeUsuario = usuario.getNomeUsuario();
+            
+            if (emailUsuario != null) {
+                emailService.enviarAceiteTermoVinculo(emailUsuario, nomeUsuario, projetoId, null);
+            }
+        } catch (Exception e) {
+            // Log error but don't fail the request
+            e.printStackTrace();
+        }
+        
         return ResponseEntity.status(HttpStatus.CREATED).body(resultado);
     }
 

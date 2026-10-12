@@ -104,4 +104,32 @@ public class EmailService {
         }
     }
 
+    @Transactional
+    public void enviarAceiteTermoVinculo(String email, String nome, Long projetoId, String nomeProjeto) {
+        try {
+            Context context = new Context();
+            context.setVariable("nome", nome != null ? nome : "Usuário");
+            context.setVariable("projetoId", projetoId);
+            context.setVariable("nomeProjeto", nomeProjeto);
+            context.setVariable("ano", LocalDate.now().getYear());
+
+            String htmlContent = templateEngine.process("email-aceite-termo-vinculo.html", context);
+
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+
+            messageHelper.setTo(email);
+            messageHelper.setSubject("Termos de Vínculo Aceitos - PitcherX");
+            messageHelper.setText(htmlContent, true);
+            messageHelper.setFrom("matheusviniciusgali05@gmail.com");
+
+            mailSender.send(mimeMessage);
+
+        } catch (MailException e) {
+            throw new RuntimeException("Falha ao enviar email de aceite de termo de vinculo", e);
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao processar envio de email", e);
+        }
+    }
+
 }

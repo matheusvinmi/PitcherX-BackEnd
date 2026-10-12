@@ -19,8 +19,8 @@
             <h2>Nova Solicitação de Vínculo</h2>
         </div>
         <div class="content">
-            <p>Olá <strong>${nomeCriador}</strong>,</p>
-            <p>O usuário <strong>${nomeSolicitante}</strong> enviou uma solicitação para se tornar <strong>${tipoDesejado}</strong> no seu projeto <strong>${nomeProjeto}</strong>.</p>
+            <p>Olá <strong th:text="${nomeCriador}">Nome do Criador</strong>,</p>
+            <p>O usuário <strong th:text="${nomeSolicitante}">Nome do Solicitante</strong> enviou uma solicitação para se tornar <strong th:text="${tipoDesejado}">Tipo Desejado</strong> no seu projeto <strong th:text="${nomeProjeto}">Nome do Projeto</strong>.</p>
             <p>Por favor, acesse o painel administrativo para aprovar ou rejeitar esta solicitação.</p>
             <p>Atenciosamente,<br/>Equipe PitcherX</p>
         </div>

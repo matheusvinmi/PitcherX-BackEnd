@@ -19,9 +19,9 @@
             <h2>Solicitação Aprovada</h2>
         </div>
         <div class="content">
-            <p>Olá <strong>${nomeSolicitante}</strong>,</p>
-            <p>Sua solicitação para se tornar <strong>${tipoConcedido}</strong> no projeto <strong>${nomeProjeto}</strong> foi <strong>aprovada</strong> pelo criador <strong>${nomeCriador}</strong>.</p>
-            <parabéns! Você agora tem acesso aos recursos do projeto como ${tipoConcedido.toLowerCase()}.</p>
+            <p>Olá <strong th:text="${nomeSolicitante}">Nome do Solicitante</strong>,</p>
+            <p>Sua solicitação para se tornar <strong th:text="${tipoConcedido}">Tipo Concedido</strong> no projeto <strong th:text="${nomeProjeto}">Nome do Projeto</strong> foi <strong>aprovada</strong> pelo criador <strong th:text="${nomeCriador}">Nome do Criador</strong>.</p>
+            <p>Parabéns! Você agora tem acesso aos recursos do projeto como <strong th:text="${tipoConcedido.toLowerCase()}">tipo</strong>.</p>
             <p>Atenciosamente,<br/>Equipe PitcherX</p>
         </div>
         <div class="footer">
