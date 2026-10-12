@@ -56,3 +56,4 @@ docker-compose.*.yml
 .agents/
 AGENTS.md
 skills-lock.json
+CHANGES.md

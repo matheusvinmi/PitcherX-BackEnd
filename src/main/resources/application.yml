@@ -28,7 +28,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
     show-sql: false
     properties:
       hibernate:
@@ -49,11 +49,11 @@ spring:
             enable: true
 
   flyway:
-    enabled: true
+    enabled: false
     locations: classpath:db/migration
     baseline-on-migrate: true
     clean-disabled: false
-    baseline-version: 1
+    baseline-version: 25
     validate-on-migrate: false
 
   management:
@@ -80,5 +80,4 @@ logging:
         type:
           descriptor:
             sql: WARN
-
 

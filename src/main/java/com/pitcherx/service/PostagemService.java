@@ -144,6 +144,6 @@ public class PostagemService {
 			imagem.setOrdem(i);
 			postagem.getImagens().add(imagem);
 		}
-		postagem.setUrlImagemPostagem(urls.getFirst());
+		postagem.setUrlImagemPostagem(urls.get(0));
 	}
 }

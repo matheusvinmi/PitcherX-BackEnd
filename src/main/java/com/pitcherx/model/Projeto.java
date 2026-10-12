@@ -2,7 +2,9 @@ package com.pitcherx.model;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -11,6 +13,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
@@ -45,10 +49,6 @@ public class Projeto {
 	@Column(name = "valor_arrecadado")
 	private Double valorArrecadado;
 
-	//Posteriormente criar uma classe somente para o risco de projeto
-	@Column(name = "risco_projeto")
-	private String riscoProjeto;
-
 	@Column(name = "data_inicio_projeto", nullable = false)
 	private	LocalDate dataInicioProjeto;
 	
@@ -72,4 +72,19 @@ public class Projeto {
 	@OrderBy("ordem ASC")
 	private List<ProjetoImagem> imagens = new ArrayList<>();
 
+	@OneToMany(mappedBy = "projeto", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<TermoVinculo> termosVinculo = new ArrayList<>();
+
+	@ManyToMany
+	@OrderBy("nomeRisco ASC")
+	@JoinTable(
+			name = "projeto_risco_projeto",
+			joinColumns = @JoinColumn(name = "projeto_id", referencedColumnName = "id_projeto"),
+			inverseJoinColumns = @JoinColumn(name = "risco_projeto_id", referencedColumnName = "id_risco_projeto")
+	)
+	private Set<RiscoProjeto> riscos = new HashSet<>();
+	
+	@ManyToOne
+	@JoinColumn(name = "usuario_criador_id", nullable = false)
+	private Usuario usuarioCriador;
 }

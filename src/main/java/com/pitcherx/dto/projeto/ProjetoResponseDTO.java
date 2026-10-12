@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.pitcherx.dto.riscoProjeto.RiscoProjetoResponseDTO;
 
 public record ProjetoResponseDTO(
 		Long idProjeto,
@@ -21,7 +22,7 @@ public record ProjetoResponseDTO(
 		List<String> imagens,
 		Double metaFinanceira,
 		Double valorArrecadado,
-		String riscoProjeto
+		List<RiscoProjetoResponseDTO> riscos
 		) {
 
 }

@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -56,11 +57,11 @@ public class ProjetoController {
 				.body(projetoService.buscarProjetos(nome, descricao, dataInicioDe, dataInicioAte));
 	}
 	
-	@PostMapping
+	@PostMapping("/{idUsuario}")
 	@PreAuthorize("hasAnyRole('USUARIO', 'EMPRESA')")
     @Operation(description = "Endpoint para criar um novo projeto")
-	public ResponseEntity<ProjetoResponseDTO> createProjeto(@Valid @RequestBody ProjetoRequestDTO projetoRequestDTO){
-		ProjetoResponseDTO projetoResponseDTO = projetoService.criarProjeto(projetoRequestDTO);
+	public ResponseEntity<ProjetoResponseDTO> createProjeto(@PathVariable Long idUsuario, @Valid @RequestBody ProjetoRequestDTO projetoRequestDTO){
+		ProjetoResponseDTO projetoResponseDTO = projetoService.criarProjeto(idUsuario, projetoRequestDTO);
 		return ResponseEntity.status(HttpStatus.CREATED).body(projetoResponseDTO);
 	}
 	
@@ -70,6 +71,22 @@ public class ProjetoController {
 	public ResponseEntity<ProjetoResponseDTO> updateProjeto(@PathVariable Long id, @Valid @RequestBody ProjetoRequestDTO projetoRequestDTO){
 		ProjetoResponseDTO projetoResponseDTO = projetoService.atualizarProjeto(id, projetoRequestDTO);
 		return ResponseEntity.status(HttpStatus.OK).body(projetoResponseDTO);
+	}
+	
+	@PatchMapping("/{id}/meta-financeira")
+	@PreAuthorize("hasAnyRole('USUARIO', 'EMPRESA')")
+    @Operation(description = "Endpoint para atualizar a meta financeira do projeto")
+	public ResponseEntity<Double> atualizarMetaFinanceira(@PathVariable Long id, @RequestBody Double novaMeta){
+		Double metaAtualizada = projetoService.atualizarMetaFinanceira(id, novaMeta);
+		return ResponseEntity.status(HttpStatus.OK).body(metaAtualizada);
+	}
+	
+	@PatchMapping("/{id}/valor-arrecadado")
+	@PreAuthorize("hasAnyRole('USUARIO', 'EMPRESA')")
+    @Operation(description = "Endpoint para atualizar o valor arrecadado do projeto")
+	public ResponseEntity<Double> atualizarValorArrecadado(@PathVariable Long id, @RequestBody Double novoValor){
+		Double valorAtualizado = projetoService.atualizarValorArrecadado(id, novoValor);
+		return ResponseEntity.status(HttpStatus.OK).body(valorAtualizado);
 	}
 
 	@PutMapping(value = "/{id}/imagens", consumes = "multipart/form-data")

@@ -54,6 +54,7 @@ public class DataInitializer {
 				admin.setEmailUsuario("adm@gmail.com");
 				String senhaHash = passwordEncoder.encode("adm1234567");
 				admin.setSenhaUsuario(senhaHash);
+				admin.setActive(true);
 
 				Role role = roleRepository.findRoleByNomeRole(RoleType.ADMIN)
 						.orElseThrow(() -> new RuntimeException("Sem role com o nome informado!"));
