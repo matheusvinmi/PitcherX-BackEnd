@@ -97,7 +97,7 @@ public class SolicitacaoVinculoService {
     }
 
     @Transactional
-    public SolicitacaoVinculoResponseDTO solicitarVinculo(Long projetoId, Long solicitanteId) {
+    public SolicitacaoVinculoResponseDTO solicitarVinculo(Long projetoId, Long solicitanteId, Long tipoVinculoDesejadoId) {
         Projeto projeto = projetoRepository.findById(projetoId)
                 .orElseThrow(() -> new EntityNotFoundException("Sem projeto com o ID informado!"));
 
@@ -121,22 +121,21 @@ public class SolicitacaoVinculoService {
             throw new IllegalArgumentException("É necessário aceitar os termos de vinculo do projeto antes de solicitar um novo vinculo.");
         }
 
-        // Buscar o tipo de vínculo desejado - precisamos saber qual tipo o usuário quer
-        // Como não temos o tipo no endpoint simplificado, vamos pegar o tipo atual do usuário
-        // ou definir um padrão. Para agora, vamos pegar o primeiro tipo VISUALIZADOR ou CRIADOR
-        // que o usuário tem como vínculo existente
-        List<ProjetoUsuario> vinculosUsuario = projetoUsuarioRepository.findByUsuario_IdUsuario(solicitante.getIdUsuario());
-        TipoVinculo tipoPadrao = null;
-        if (!vinculosUsuario.isEmpty()) {
-            tipoPadrao = vinculosUsuario.get(0).getTipoVinculo();
-        }
-        if (tipoPadrao == null) {
-            // Fallback: pegar o tipo CRIADOR se existir, senão VISUALIZADOR
-            tipoPadrao = tipoVinculoRepository.findByNomeTipoVinculo(TipoVinculoEnum.CRIADOR.toString())
-                    .orElseGet(() -> tipoVinculoRepository.findByNomeTipoVinculo(TipoVinculoEnum.VISUALIZADOR.toString()).orElseThrow());
-        }
+        // Buscar o tipo de vínculo desejado pelo ID informado
+        TipoVinculo tipoDesejado = tipoVinculoRepository.findById(tipoVinculoDesejadoId)
+                .orElseThrow(() -> new EntityNotFoundException("Sem tipo de vínculo com o ID informado!"));
 
-        TipoVinculo tipoDesejado = tipoPadrao;
+        // Validar que apenas SOCIO ou INVESTIDOR podem ser solicitados via esta via
+        // (CRIADOR é definido automaticamente na criação do projeto;
+        //  VISUALIZADOR é obtido automaticamente ao aceitar os termos de vinculo)
+        String nomeTipoDesejado = tipoDesejado.getNomeTipoVinculo();
+        if (!nomeTipoDesejado.equals(TipoVinculoEnum.SOCIO.toString())
+                && !nomeTipoDesejado.equals(TipoVinculoEnum.INVESTIDOR.toString())) {
+            throw new IllegalArgumentException(
+                    "Apenas os tipos de vínculo SOCIO ou INVESTIDOR podem ser solicitados. " +
+                            "Para ser VISUALIZADOR, aceite os termos de vinculo do projeto; " +
+                            "CRIADOR é atribuído automaticamente ao criar um projeto.");
+        }
 
         SolicitacaoVinculo solicitacao = new SolicitacaoVinculo();
         solicitacao.setProjeto(projeto);
@@ -269,9 +268,9 @@ public class SolicitacaoVinculoService {
 
         // Enviar email de notificação para o solicitante
         try {
-            enviarEmailRejeicaoParaSolicitante(solicitacao);
+            enviarEmailAprovacaoParaSolicitante(solicitacao);
         } catch (MailException e) {
-            throw new RuntimeException("Falha ao enviar email de rejeição", e);
+            throw new RuntimeException("Falha ao enviar email de aprovação", e);
         }
 
         return solicitacaoVinculoMapper.toDTO(solicitacao);

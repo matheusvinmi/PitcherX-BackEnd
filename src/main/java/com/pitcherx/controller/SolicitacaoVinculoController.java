@@ -59,7 +59,7 @@ public class SolicitacaoVinculoController {
     public ResponseEntity<SolicitacaoVinculoResponseDTO> solicitarVinculo(@PathVariable Long projetoId,
                                                                         @Valid @RequestBody SolicitacaoVinculoRequestDTO dto,
                                                                         @AuthenticationPrincipal Usuario usuario) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(solicitacaoVinculoService.solicitarVinculo(projetoId, usuario.getIdUsuario()));
+        return ResponseEntity.status(HttpStatus.CREATED).body(solicitacaoVinculoService.solicitarVinculo(projetoId, usuario.getIdUsuario(), dto.tipoVinculoDesejadoId()));
     }
 
     @PutMapping("/{id}/aprovar")
