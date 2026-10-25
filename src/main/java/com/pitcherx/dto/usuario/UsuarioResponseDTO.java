@@ -10,7 +10,9 @@ public record UsuarioResponseDTO(
         String emailUsuario,
         String telefoneUsuario,
         String urlImagemUsuario,
+        String urlVideoUsuario,
         Boolean active,
         List<String> roles
 ) {
+
 }

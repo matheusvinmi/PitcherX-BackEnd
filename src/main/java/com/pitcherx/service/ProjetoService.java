@@ -7,6 +7,7 @@ import java.util.Set;
 
 import com.pitcherx.model.ProjetoImagem;
 import com.pitcherx.model.ProjetoUsuario;
+import com.pitcherx.model.ProjetoVideo;
 import com.pitcherx.model.Usuario;
 import com.pitcherx.specs.ProjetoSpecification;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -30,7 +31,7 @@ import com.pitcherx.repository.ProjetoUsuarioRepository;
 import com.pitcherx.repository.RiscoProjetoRepository;
 import com.pitcherx.repository.TipoProjetoRepository;
 import com.pitcherx.repository.TipoVinculoRepository;
-import com.pitcherx.utils.ImagemUploadUtil;
+import com.pitcherx.utils.UploadUtil;
 import com.pitcherx.repository.UsuarioRepository;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -42,20 +43,20 @@ private final ProjetoRepository projetoRepository;
     private final ProjetoMapper projetoMapper;
     private final TipoProjetoRepository tipoProjetoRepository;
     private final RiscoProjetoRepository riscoProjetoRepository;
-    private final ImagemUploadUtil imagemUploadUtil;
+    private final UploadUtil uploadUtil;
     private final ProjetoUsuarioRepository projetoUsuarioRepository;
     private final TipoVinculoRepository tipoVinculoRepository;
     private final UsuarioRepository usuarioRepository;
 
     public ProjetoService(ProjetoRepository projetoRepository, ProjetoMapper projetoMapper,
             TipoProjetoRepository tipoProjetoRepository, RiscoProjetoRepository riscoProjetoRepository,
-            ImagemUploadUtil imagemUploadUtil, ProjetoUsuarioRepository projetoUsuarioRepository,
+            UploadUtil uploadUtil, ProjetoUsuarioRepository projetoUsuarioRepository,
             TipoVinculoRepository tipoVinculoRepository, UsuarioRepository usuarioRepository) {
         this.projetoRepository = projetoRepository;
         this.projetoMapper = projetoMapper;
         this.tipoProjetoRepository = tipoProjetoRepository;
         this.riscoProjetoRepository = riscoProjetoRepository;
-        this.imagemUploadUtil = imagemUploadUtil;
+        this.uploadUtil = uploadUtil;
         this.projetoUsuarioRepository = projetoUsuarioRepository;
         this.tipoVinculoRepository = tipoVinculoRepository;
         this.usuarioRepository = usuarioRepository;
@@ -189,9 +190,11 @@ private final ProjetoRepository projetoRepository;
 		Projeto projeto = projetoRepository.findById(idProjeto)
 				.orElseThrow(() -> new EntityNotFoundException("Sem projeto com o ID informado!"));
 		try {
-			List<String> urlsAntigas = obterUrlsImagem(projeto);
+			List<String> urlsAntigasImagens = obterUrlsImagem(projeto);
+			List<String> urlsAntigasVideos = obterUrlsVideo(projeto);
 			projetoRepository.delete(projeto);
-			imagemUploadUtil.limparAposTransacao(urlsAntigas, List.of());
+			uploadUtil.limparAposTransacaoImagens(urlsAntigasImagens, List.of());
+			uploadUtil.limparAposTransacaoVideos(urlsAntigasVideos, List.of());
 		} catch (DataIntegrityViolationException e) {
             throw new IllegalArgumentException("Não é possível deletar este projeto, pois ele está associado a outras entidades.");
 		}
@@ -203,9 +206,9 @@ private final ProjetoRepository projetoRepository;
 				.orElseThrow(() -> new EntityNotFoundException("Sem projeto com o ID informado!"));
 		validarAcessoImagens(projeto, usuarioLogado);
 
-		List<String> urlsNovas = imagemUploadUtil.salvarImagens(arquivos);
+		List<String> urlsNovas = uploadUtil.salvarImagens(arquivos);
 		List<String> urlsAntigas = obterUrlsImagem(projeto);
-		imagemUploadUtil.limparAposTransacao(urlsAntigas, urlsNovas);
+		uploadUtil.limparAposTransacaoImagens(urlsAntigas, urlsNovas);
 		projeto.getImagens().clear();
 		projetoRepository.flush();
 		atualizarImagens(projeto, urlsNovas);
@@ -219,9 +222,37 @@ private final ProjetoRepository projetoRepository;
 		validarAcessoImagens(projeto, usuarioLogado);
 
 		List<String> urlsAntigas = obterUrlsImagem(projeto);
-		imagemUploadUtil.limparAposTransacao(urlsAntigas, List.of());
+		uploadUtil.limparAposTransacaoImagens(urlsAntigas, List.of());
 		projeto.getImagens().clear();
 		projeto.setUrlImagemProjeto(null);
+		projetoRepository.save(projeto);
+	}
+
+	@Transactional
+	public ProjetoResponseDTO substituirVideos(Long idProjeto, Usuario usuarioLogado, List<MultipartFile> arquivos) {
+		Projeto projeto = projetoRepository.findById(idProjeto)
+				.orElseThrow(() -> new EntityNotFoundException("Sem projeto com o ID informado!"));
+		validarAcessoImagens(projeto, usuarioLogado);
+
+		List<String> urlsNovas = uploadUtil.salvarVideos(arquivos);
+		List<String> urlsAntigas = obterUrlsVideo(projeto);
+		uploadUtil.limparAposTransacaoVideos(urlsAntigas, urlsNovas);
+		projeto.getVideos().clear();
+		projetoRepository.flush();
+		atualizarVideos(projeto, urlsNovas);
+		return projetoMapper.toDTO(projetoRepository.save(projeto));
+	}
+
+	@Transactional
+	public void removerVideos(Long idProjeto, Usuario usuarioLogado) {
+		Projeto projeto = projetoRepository.findById(idProjeto)
+				.orElseThrow(() -> new EntityNotFoundException("Sem projeto com o ID informado!"));
+		validarAcessoImagens(projeto, usuarioLogado);
+
+		List<String> urlsAntigas = obterUrlsVideo(projeto);
+		uploadUtil.limparAposTransacaoVideos(urlsAntigas, List.of());
+		projeto.getVideos().clear();
+		projeto.setUrlVideoProjeto(null);
 		projetoRepository.save(projeto);
 	}
 
@@ -256,6 +287,27 @@ private final ProjetoRepository projetoRepository;
 			projeto.getImagens().add(imagem);
 		}
 		projeto.setUrlImagemProjeto(urls.get(0));
+	}
+
+	private List<String> obterUrlsVideo(Projeto projeto) {
+		List<String> urls = projeto.getVideos().stream()
+				.map(ProjetoVideo::getUrlVideo)
+				.collect(java.util.stream.Collectors.toCollection(java.util.ArrayList::new));
+		if (projeto.getUrlVideoProjeto() != null && !urls.contains(projeto.getUrlVideoProjeto())) {
+			urls.add(projeto.getUrlVideoProjeto());
+		}
+		return urls;
+	}
+
+	private void atualizarVideos(Projeto projeto, List<String> urls) {
+		for (int i = 0; i < urls.size(); i++) {
+			ProjetoVideo video = new ProjetoVideo();
+			video.setProjeto(projeto);
+			video.setUrlVideo(urls.get(i));
+			video.setOrdem(i);
+			projeto.getVideos().add(video);
+		}
+		projeto.setUrlVideoProjeto(urls.get(0));
 	}
 
 	private Set<RiscoProjeto> buscarRiscos(List<Long> idsRiscos) {

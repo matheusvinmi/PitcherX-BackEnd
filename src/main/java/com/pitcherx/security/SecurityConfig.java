@@ -37,6 +37,7 @@ public class SecurityConfig {
                                 "/usuario/validar-token",
                                 "/usuario/resetar-senha",
                                 "/uploads/**",
+                                "/videos/**",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**"
                         ).permitAll()

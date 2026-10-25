@@ -17,4 +17,5 @@ public interface ContratoMapper {
     Contrato toEntity(ContratoRequestDTO contratoRequestDTO);
 
     void toUpdate(ContratoRequestDTO contratoRequestDTO, @MappingTarget Contrato contrato);
+
 }

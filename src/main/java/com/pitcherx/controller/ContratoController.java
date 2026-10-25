@@ -46,6 +46,14 @@ public class ContratoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(contratoResponseDTO);
     }
 
+    @PutMapping("/{id}/aceitar")
+    @PreAuthorize("hasAnyRole('ADMIN','USUARIO','EMPRESARIO')")
+    @Operation(summary = "Aceitar contrato", description = "Aceita o contrato e adiciona o valor da proposta ao projeto arrecadado.")
+    public ResponseEntity<ContratoResponseDTO> aceitarContrato(@PathVariable Long id){
+        ContratoResponseDTO contratoResponseDTO = contratoService.aceitarContrato(id);
+        return ResponseEntity.status(HttpStatus.OK).body(contratoResponseDTO);
+    }
+
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','USUARIO','EMPRESARIO')")
     @Operation(summary = "Atualizar contrato", description = "Atualiza os dados de um contrato específico com base no ID fornecido.")

@@ -9,14 +9,17 @@ app:
     dir: ${UPLOAD_DIR}
     base-path: ${UPLOAD_BASE_PATH}
     base-url: ${UPLOAD_BASE_URL}
+    video-dir: ${UPLOAD_VIDEO_DIR}
+    video-base-path: ${UPLOAD_VIDEO_BASE_PATH}
+    video-base-url: ${UPLOAD_VIDEO_BASE_URL}
 
 spring:
   application:
     name: pitcherx
   servlet:
     multipart:
-      max-file-size: 10MB
-      max-request-size: 100MB
+      max-file-size: 256MB
+      max-request-size: 256MB
 
   config:
     import: optional:file:.env[.properties]
@@ -49,7 +52,7 @@ spring:
             enable: true
 
   flyway:
-    enabled: false
+    enabled: true
     locations: classpath:db/migration
     baseline-on-migrate: true
     clean-disabled: false

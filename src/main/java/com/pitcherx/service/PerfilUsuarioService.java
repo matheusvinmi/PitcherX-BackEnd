@@ -14,7 +14,7 @@ import com.pitcherx.model.PerfilUsuario;
 import com.pitcherx.model.Usuario;
 import com.pitcherx.repository.EspecialidadeRepository;
 import com.pitcherx.repository.PerfilUsuarioRepository;
-import com.pitcherx.utils.ImagemUploadUtil;
+import com.pitcherx.utils.UploadUtil;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.core.GrantedAuthority;
@@ -26,14 +26,14 @@ public class PerfilUsuarioService {
 	private final PerfilUsuarioRepository perfilUsuarioRepository;
 	private final PerfilUsuarioMapper perfilUsuarioMapper;
 	private final EspecialidadeRepository especialidadeRepository;
-	private final ImagemUploadUtil imagemUploadUtil;
+	private final UploadUtil uploadUtil;
 	
 	public PerfilUsuarioService(PerfilUsuarioRepository perfilUsuarioRepository, PerfilUsuarioMapper perfilUsuarioMapper,
-			EspecialidadeRepository especialidadeRepository, ImagemUploadUtil imagemUploadUtil) {
+			EspecialidadeRepository especialidadeRepository, UploadUtil uploadUtil) {
 		this.perfilUsuarioRepository = perfilUsuarioRepository;
 		this.perfilUsuarioMapper = perfilUsuarioMapper;
 		this.especialidadeRepository = especialidadeRepository;
-		this.imagemUploadUtil = imagemUploadUtil;
+		this.uploadUtil = uploadUtil;
 	}
 	
 	@Transactional(readOnly = true)
@@ -83,8 +83,11 @@ public class PerfilUsuarioService {
 				.orElseThrow(() -> new EntityNotFoundException("Sem perfil de usuário com o ID informado!"));
 		try {
 			perfilUsuarioRepository.delete(perfilUsuario);
-			imagemUploadUtil.limparAposTransacao(
+			uploadUtil.limparAposTransacaoImagens(
 					perfilUsuario.getUrlBanner() == null ? List.of() : List.of(perfilUsuario.getUrlBanner()),
+					List.of());
+			uploadUtil.limparAposTransacaoVideos(
+					perfilUsuario.getUrlVideoPerfil() == null ? List.of() : List.of(perfilUsuario.getUrlVideoPerfil()),
 					List.of());
 		} catch (DataIntegrityViolationException e) {
 			throw new IllegalArgumentException("Não é possível deletar este perfil de usuário, pois ele está associado a outras entidades.");
@@ -95,8 +98,8 @@ public class PerfilUsuarioService {
 	public PerfilUsuarioResponseDTO atualizarBanner(Long idPerfilUsuario, Usuario usuarioLogado, MultipartFile arquivo) {
 		PerfilUsuario perfilUsuario = buscarPerfilComPermissao(idPerfilUsuario, usuarioLogado);
 		String urlAnterior = perfilUsuario.getUrlBanner();
-		String novaUrl = imagemUploadUtil.salvarImagem(arquivo);
-		imagemUploadUtil.limparAposTransacao(
+		String novaUrl = uploadUtil.salvarImagem(arquivo);
+		uploadUtil.limparAposTransacaoImagens(
 				urlAnterior == null ? List.of() : List.of(urlAnterior),
 				List.of(novaUrl));
 		perfilUsuario.setUrlBanner(novaUrl);
@@ -107,10 +110,33 @@ public class PerfilUsuarioService {
 	public void removerBanner(Long idPerfilUsuario, Usuario usuarioLogado) {
 		PerfilUsuario perfilUsuario = buscarPerfilComPermissao(idPerfilUsuario, usuarioLogado);
 		String urlAnterior = perfilUsuario.getUrlBanner();
-		imagemUploadUtil.limparAposTransacao(
+		uploadUtil.limparAposTransacaoImagens(
 				urlAnterior == null ? List.of() : List.of(urlAnterior),
 				List.of());
 		perfilUsuario.setUrlBanner(null);
+		perfilUsuarioRepository.save(perfilUsuario);
+	}
+
+	@Transactional
+	public PerfilUsuarioResponseDTO atualizarVideo(Long idPerfilUsuario, Usuario usuarioLogado, MultipartFile arquivo) {
+		PerfilUsuario perfilUsuario = buscarPerfilComPermissao(idPerfilUsuario, usuarioLogado);
+		String urlAnterior = perfilUsuario.getUrlVideoPerfil();
+		String novaUrl = uploadUtil.salvarVideo(arquivo);
+		uploadUtil.limparAposTransacaoVideos(
+				urlAnterior == null ? List.of() : List.of(urlAnterior),
+				List.of(novaUrl));
+		perfilUsuario.setUrlVideoPerfil(novaUrl);
+		return perfilUsuarioMapper.toDTO(perfilUsuarioRepository.save(perfilUsuario));
+	}
+
+	@Transactional
+	public void removerVideo(Long idPerfilUsuario, Usuario usuarioLogado) {
+		PerfilUsuario perfilUsuario = buscarPerfilComPermissao(idPerfilUsuario, usuarioLogado);
+		String urlAnterior = perfilUsuario.getUrlVideoPerfil();
+		uploadUtil.limparAposTransacaoVideos(
+				urlAnterior == null ? List.of() : List.of(urlAnterior),
+				List.of());
+		perfilUsuario.setUrlVideoPerfil(null);
 		perfilUsuarioRepository.save(perfilUsuario);
 	}
 

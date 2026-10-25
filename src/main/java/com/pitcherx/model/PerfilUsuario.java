@@ -27,6 +27,9 @@ public class PerfilUsuario {
 	
 	@Column(name = "url_banner_perfil")
 	private String urlBanner;
+
+	@Column(name = "url_video_perfil")
+	private String urlVideoPerfil;
 	
 	@Lob
 	@Column(columnDefinition = "TEXT")

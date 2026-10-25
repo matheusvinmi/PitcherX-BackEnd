@@ -1,11 +1,6 @@
 package com.pitcherx.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,5 +24,12 @@ public class Proposta {
 	
 	@Column(name = "valor_proposta", nullable = true)
 	private Double valorProposta;
+	
+	@ManyToOne
+	@JoinColumn(name = "projeto_id", nullable = false)
+	private Projeto projeto;
+	
+	@Column(name = "status_proposta", nullable = false)
+	private String statusProposta = "PENDENTE";
 
 }

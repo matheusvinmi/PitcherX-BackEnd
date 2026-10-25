@@ -18,6 +18,7 @@ public interface ProjetoMapper {
 	
 	@Mapping(source = "tipoProjeto.idTipoProjeto", target = "tipoProjetoId")
 	@Mapping(target = "imagens", expression = "java(projeto.getImagens().isEmpty() ? (projeto.getUrlImagemProjeto() == null ? java.util.List.of() : java.util.List.of(projeto.getUrlImagemProjeto())) : projeto.getImagens().stream().map(com.pitcherx.model.ProjetoImagem::getUrlImagem).toList())")
+	@Mapping(target = "videos", expression = "java(projeto.getVideos().isEmpty() ? (projeto.getUrlVideoProjeto() == null ? java.util.List.of() : java.util.List.of(projeto.getUrlVideoProjeto())) : projeto.getVideos().stream().map(com.pitcherx.model.ProjetoVideo::getUrlVideo).toList())")
 	@Mapping(target = "riscos", source = "riscos")
 	ProjetoResponseDTO toDTO(Projeto projeto);
 
@@ -27,9 +28,14 @@ public interface ProjetoMapper {
 	
 	@Mapping(target = "idProjeto", ignore = true)
 	@Mapping(target = "riscos", ignore = true)
+	@Mapping(target = "imagens", ignore = true)
+	@Mapping(target = "videos", ignore = true)
 	Projeto toEntity(ProjetoRequestDTO projetoRequestDTO);
 	
 	@Mapping(target = "urlImagemProjeto", ignore = true)
+	@Mapping(target = "urlVideoProjeto", ignore = true)
+	@Mapping(target = "imagens", ignore = true)
+	@Mapping(target = "videos", ignore = true)
 	@Mapping(target = "riscos", ignore = true)
 	void toUpdate(ProjetoRequestDTO projetoRequestDTO, @MappingTarget Projeto projeto);
 

@@ -129,6 +129,24 @@ public class ProjetoController {
         projetoService.removerImagens(id, usuario);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping(value = "/{id}/videos", consumes = "multipart/form-data")
+    @PreAuthorize("hasAnyRole('USUARIO', 'EMPRESA', 'ADMIN')")
+    @Operation(summary = "Substituir videos do projeto", description = "Envia de 1 a 10 videos em ordem para substituir a galeria.")
+    public ResponseEntity<ProjetoResponseDTO> substituirVideos(
+            @PathVariable Long id,
+            @RequestParam("arquivos") List<MultipartFile> arquivos,
+            @AuthenticationPrincipal Usuario usuario) {
+        return ResponseEntity.ok(projetoService.substituirVideos(id, usuario, arquivos));
+    }
+
+    @DeleteMapping("/{id}/videos")
+    @PreAuthorize("hasAnyRole('USUARIO', 'EMPRESA', 'ADMIN')")
+    @Operation(summary = "Remover videos do projeto", description = "Remove todos os videos da galeria.")
+    public ResponseEntity<Void> removerVideos(@PathVariable Long id, @AuthenticationPrincipal Usuario usuario) {
+        projetoService.removerVideos(id, usuario);
+        return ResponseEntity.noContent().build();
+    }
     
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'USUARIO', 'EMPRESA')")

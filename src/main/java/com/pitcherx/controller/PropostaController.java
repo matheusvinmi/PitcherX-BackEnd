@@ -51,10 +51,17 @@ public class PropostaController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(propostaResponseDTO);
 	}
 	
-	@PutMapping("/{id}")
-	@Operation(summary = "Atualizar Proposta", description = "Atualiza uma proposta existente com base no ID fornecido e nos dados fornecidos")
-	public ResponseEntity<PropostaResponseDTO> updateProposta(@PathVariable Long id, @Valid @RequestBody PropostaRequestDTO propostaRequestDTO){
-		PropostaResponseDTO propostaResponseDTO = propostaService.atualizarProposta(id, propostaRequestDTO);
+	@PutMapping("/aceitar/{id}")
+	@Operation(summary = "Aceitar Proposta", description = "Aceita uma proposta e adiciona seu valor ao projeto arrecadado")
+	public ResponseEntity<PropostaResponseDTO> aceitarProposta(@PathVariable Long id){
+		PropostaResponseDTO propostaResponseDTO = propostaService.aceitarProposta(id);
+		return ResponseEntity.status(HttpStatus.OK).body(propostaResponseDTO);
+	}
+	
+	@PutMapping("/recusar/{id}")
+	@Operation(summary = "Recusar Proposta", description = "Recusa uma proposta")
+	public ResponseEntity<PropostaResponseDTO> recusarProposta(@PathVariable Long id){
+		PropostaResponseDTO propostaResponseDTO = propostaService.recusarProposta(id);
 		return ResponseEntity.status(HttpStatus.OK).body(propostaResponseDTO);
 	}
 	
@@ -65,4 +72,10 @@ public class PropostaController {
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 	
+	@GetMapping("/projeto/{projetoId}")
+	@Operation(summary = "Listar Propostas por Projeto", description = "Retorna todas as propostas de um projeto específico baseado no ID")
+	public ResponseEntity<List<PropostaResponseDTO>> getPropostasByProjeto(@PathVariable Long projetoId){
+		return ResponseEntity.status(HttpStatus.OK).body(propostaService.listarPropostasByProjeto(projetoId));
+	}
+
 }

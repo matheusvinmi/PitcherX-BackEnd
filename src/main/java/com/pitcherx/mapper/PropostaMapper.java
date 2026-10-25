@@ -11,6 +11,8 @@ import com.pitcherx.model.Proposta;
 @Mapper(componentModel = "spring")
 public interface PropostaMapper {
 
+	@Mapping(target = "idProposta", ignore = true)
+	@Mapping(target = "statusProposta", defaultValue = "PENDENTE")
 	PropostaResponseDTO toDTO(Proposta proposta);
 	
 	@Mapping(target = "idProposta", ignore = true)

@@ -49,6 +49,15 @@ public class Projeto {
 	@Column(name = "valor_arrecadado")
 	private Double valorArrecadado;
 
+	@Column(name = "investimento_minimo", nullable = false)
+	private Double investimentoMinimo;
+
+	@Column(name = "participacao_oferecida", nullable = false)
+	private Integer participacaoOferecida;
+
+	@Column(name = "uso_recursos")
+	private String usoRecursos;
+
 	@Column(name = "data_inicio_projeto", nullable = false)
 	private	LocalDate dataInicioProjeto;
 	
@@ -65,12 +74,19 @@ public class Projeto {
 	@Column(name = "url_imagem_projeto")
 	private String urlImagemProjeto;
 
+	@Column(name = "url_video_projeto")
+	private String urlVideoProjeto;
+
 	@OneToMany(mappedBy = "projeto", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<ProjetoUsuario> usuarios = new ArrayList<>();
 
 	@OneToMany(mappedBy = "projeto", cascade = CascadeType.ALL, orphanRemoval = true)
 	@OrderBy("ordem ASC")
 	private List<ProjetoImagem> imagens = new ArrayList<>();
+
+	@OneToMany(mappedBy = "projeto", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OrderBy("ordem ASC")
+	private List<ProjetoVideo> videos = new ArrayList<>();
 
 	@OneToMany(mappedBy = "projeto", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<TermoVinculo> termosVinculo = new ArrayList<>();

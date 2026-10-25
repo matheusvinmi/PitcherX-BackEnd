@@ -144,4 +144,19 @@ import com.pitcherx.dto.usuario.ValidarCodigoVerificacaoRequestDTO;
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }
 
+        @PostMapping(value = "/{id}/video", consumes = "multipart/form-data")
+        @PreAuthorize("hasRole('ADMIN') or #id == principal.idUsuario")
+        @Operation(description = "Endpoint para atualizar o video de perfil do usuário")
+        public ResponseEntity<UsuarioResponseDTO> atualizarVideo(@PathVariable Long id, @RequestParam("arquivo") MultipartFile arquivo) {
+            return ResponseEntity.status(HttpStatus.OK).body(usuarioService.atualizarVideoUsuario(id, arquivo));
+        }
+
+        @DeleteMapping("/{id}/video")
+        @PreAuthorize("hasRole('ADMIN') or #id == principal.idUsuario")
+        @Operation(description = "Endpoint para remover o video de perfil do usuário")
+        public ResponseEntity<Void> removerVideo(@PathVariable Long id) {
+            usuarioService.removerVideoUsuario(id);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
+
     }

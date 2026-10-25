@@ -33,6 +33,17 @@ public record ProjetoRequestDTO(
 		
 		Double valorArrecadado,
 		
+		@NotNull(message = "O investimento mínimo é obrigatório!") Double investimentoMinimo,
+		
+		@NotNull(message = "A participação oferecida é obrigatória!") Integer participacaoOferecida,
+		
+		String usoRecursos,
+		
+		String urlImagemProjeto,
+		String urlVideoProjeto,
+		List<String> imagens,
+		List<String> videos,
+		
 		@NotNull(message = "A lista de riscos do projeto é obrigatória!") List<@NotNull Long> riscoProjetoIds
 		) {
 

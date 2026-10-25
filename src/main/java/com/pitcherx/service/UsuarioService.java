@@ -12,7 +12,7 @@ import com.pitcherx.repository.RoleRepository;
 import com.pitcherx.repository.UsuarioRepository;
 import com.pitcherx.security.RoleType;
 import com.pitcherx.security.TokenConfig;
-import com.pitcherx.utils.ImagemUploadUtil;
+import com.pitcherx.utils.UploadUtil;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -34,17 +34,17 @@ public class UsuarioService {
     private final PasswordEncoder passwordEncoder;
     private final TokenConfig tokenConfig;
     private final EmailService emailService;
-    private final ImagemUploadUtil imagemUploadUtil;
+    private final UploadUtil uploadUtil;
 
     public UsuarioService(UsuarioRepository usuarioRepository, UsuarioMapper usuarioMapper,
-    		RoleRepository roleRepository, PasswordEncoder passwordEncoder, TokenConfig tokenConfig, EmailService emailService, ImagemUploadUtil imagemUploadUtil) {
+    		RoleRepository roleRepository, PasswordEncoder passwordEncoder, TokenConfig tokenConfig, EmailService emailService, UploadUtil uploadUtil) {
         this.usuarioRepository = usuarioRepository;
         this.usuarioMapper = usuarioMapper;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
         this.tokenConfig = tokenConfig;
         this.emailService = emailService;
-        this.imagemUploadUtil = imagemUploadUtil;
+        this.uploadUtil = uploadUtil;
      }
 
      @Transactional(readOnly = true)
@@ -136,20 +136,23 @@ public class UsuarioService {
           return usuarioMapper.toDTO(salvo);
       }
 
-     @Transactional
-     public void deletarUsuario(Long idUsuario){
-         Usuario usuario = usuarioRepository.findById(idUsuario)
-                 .orElseThrow(() -> new EntityNotFoundException("Sem usuário com o ID informado!"));
-         try {
-             usuarioRepository.delete(usuario);
-             imagemUploadUtil.limparAposTransacao(
-                     usuario.getUrlImagemUsuario() == null ? List.of() : List.of(usuario.getUrlImagemUsuario()),
-                     List.of());
-         } catch (DataIntegrityViolationException e) {
-            throw new IllegalStateException("Não é possível deletar o usuário, pois ele está associada a outras entidades.!");
-        }
+@Transactional
+      public void deletarUsuario(Long idUsuario){
+          Usuario usuario = usuarioRepository.findById(idUsuario)
+                  .orElseThrow(() -> new EntityNotFoundException("Sem usuário com o ID informado!"));
+          try {
+              usuarioRepository.delete(usuario);
+              uploadUtil.limparAposTransacaoImagens(
+                      usuario.getUrlImagemUsuario() == null ? List.of() : List.of(usuario.getUrlImagemUsuario()),
+                      List.of());
+              uploadUtil.limparAposTransacaoVideos(
+                      usuario.getUrlVideoUsuario() == null ? List.of() : List.of(usuario.getUrlVideoUsuario()),
+                      List.of());
+          } catch (DataIntegrityViolationException e) {
+             throw new IllegalStateException("Não é possível deletar o usuário, pois ele está associada a outras entidades.!");
+         }
 
-     }
+      }
 
      @Transactional
     public LoginResponseDTO login(LoginRequestDTO loginRequestDTO){
@@ -215,11 +218,26 @@ public class UsuarioService {
         Usuario usuario = usuarioRepository.findById(idUsuario)
                 .orElseThrow(() -> new EntityNotFoundException("Sem usuário com o ID informado!"));
 
-        String novaUrl = imagemUploadUtil.salvarImagem(arquivo);
-        imagemUploadUtil.limparAposTransacao(
+        String novaUrl = uploadUtil.salvarImagem(arquivo);
+        uploadUtil.limparAposTransacaoImagens(
                 usuario.getUrlImagemUsuario() == null ? List.of() : List.of(usuario.getUrlImagemUsuario()),
                 List.of(novaUrl));
         usuario.setUrlImagemUsuario(novaUrl);
+
+        Usuario salvo = usuarioRepository.save(usuario);
+        return usuarioMapper.toDTO(salvo);
+    }
+
+    @Transactional
+    public UsuarioResponseDTO atualizarVideoUsuario(Long idUsuario, MultipartFile arquivo) {
+        Usuario usuario = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new EntityNotFoundException("Sem usuário com o ID informado!"));
+
+        String novaUrl = uploadUtil.salvarVideo(arquivo);
+        uploadUtil.limparAposTransacaoVideos(
+                usuario.getUrlVideoUsuario() == null ? List.of() : List.of(usuario.getUrlVideoUsuario()),
+                List.of(novaUrl));
+        usuario.setUrlVideoUsuario(novaUrl);
 
         Usuario salvo = usuarioRepository.save(usuario);
         return usuarioMapper.toDTO(salvo);
@@ -230,10 +248,23 @@ public class UsuarioService {
         Usuario usuario = usuarioRepository.findById(idUsuario)
                 .orElseThrow(() -> new EntityNotFoundException("Sem usuário com o ID informado!"));
 
-        imagemUploadUtil.limparAposTransacao(
+        uploadUtil.limparAposTransacaoImagens(
                 usuario.getUrlImagemUsuario() == null ? List.of() : List.of(usuario.getUrlImagemUsuario()),
                 List.of());
         usuario.setUrlImagemUsuario(null);
+
+        usuarioRepository.save(usuario);
+    }
+
+    @Transactional
+    public void removerVideoUsuario(Long idUsuario) {
+        Usuario usuario = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new EntityNotFoundException("Sem usuário com o ID informado!"));
+
+        uploadUtil.limparAposTransacaoVideos(
+                usuario.getUrlVideoUsuario() == null ? List.of() : List.of(usuario.getUrlVideoUsuario()),
+                List.of());
+        usuario.setUrlVideoUsuario(null);
 
         usuarioRepository.save(usuario);
     }

@@ -49,6 +49,9 @@ public class Usuario implements UserDetails {
     @Column(name = "url_imagem_usuario")
     private String urlImagemUsuario;
 
+    @Column(name = "url_video_usuario")
+    private String urlVideoUsuario;
+
     @Column(name = "codigo_verificacao_usuario")
     private String codigoVerificacao;
 
