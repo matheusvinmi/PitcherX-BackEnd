@@ -77,6 +77,19 @@ public class Usuario implements UserDetails {
     @UpdateTimestamp
     private LocalDateTime dataAtualizacaoUsuario;
 
+    @Column(name = "url_comprovante_identidade", length = 500)
+    private String urlComprovanteIdentidade;
+
+    @Column(name = "status_analise_identidade", nullable = false, length = 30)
+    private String statusAnaliseIdentidade = "PENDENTE";
+
+    @Column(name = "tentativas_identidade", nullable = false)
+    private Integer tentativasIdentidade = 0;
+
+    @ManyToOne
+    @JoinColumn(name = "nivel_conta_id")
+    private NivelConta nivelConta;
+
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProjetoUsuario> projetos = new ArrayList<>();
 

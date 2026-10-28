@@ -1,5 +1,6 @@
 package com.pitcherx.dto.usuario;
 
+import com.pitcherx.dto.nivelconta.NivelContaResponseDTO;
 import com.pitcherx.model.Role;
 
 import java.util.List;
@@ -11,8 +12,12 @@ public record UsuarioResponseDTO(
         String telefoneUsuario,
         String urlImagemUsuario,
         String urlVideoUsuario,
+        String urlComprovanteIdentidade,
+        String statusAnaliseIdentidade,
+        Integer tentativasIdentidade,
         Boolean active,
-        List<String> roles
+        List<String> roles,
+        NivelContaResponseDTO nivelConta
 ) {
 
 }

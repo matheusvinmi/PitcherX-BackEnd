@@ -23,4 +23,6 @@ public interface ProjetoUsuarioRepository extends JpaRepository<ProjetoUsuario, 
     Optional<ProjetoUsuario> findByProjeto_IdProjetoAndUsuario_IdUsuario(Long projetoId, Long usuarioId);
 
     Optional<ProjetoUsuario> findByProjeto_IdProjetoAndUsuario_IdUsuarioAndTipoVinculo_NomeTipoVinculo(Long projetoId, Long usuarioId, String nomeTipoVinculo);
+
+    boolean existsByUsuario_IdUsuarioAndTipoVinculo_NomeTipoVinculoIn(Long usuarioId, List<String> nomesTipoVinculo);
 }

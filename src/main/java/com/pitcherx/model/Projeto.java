@@ -76,6 +76,12 @@ public class Projeto {
 
 	@Column(name = "url_video_projeto")
 	private String urlVideoProjeto;
+	
+	@Column(name = "visualizacoes", nullable = false)
+	private Integer visualizacoes = 0;
+
+	@Column(name = "seguidores", nullable = false)
+	private Integer seguidores = 0;
 
 	@OneToMany(mappedBy = "projeto", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<ProjetoUsuario> usuarios = new ArrayList<>();

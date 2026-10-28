@@ -31,8 +31,9 @@ import com.pitcherx.repository.ProjetoUsuarioRepository;
 import com.pitcherx.repository.RiscoProjetoRepository;
 import com.pitcherx.repository.TipoProjetoRepository;
 import com.pitcherx.repository.TipoVinculoRepository;
-import com.pitcherx.utils.UploadUtil;
 import com.pitcherx.repository.UsuarioRepository;
+import com.pitcherx.service.UsuarioService;
+import com.pitcherx.utils.UploadUtil;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -47,11 +48,13 @@ private final ProjetoRepository projetoRepository;
     private final ProjetoUsuarioRepository projetoUsuarioRepository;
     private final TipoVinculoRepository tipoVinculoRepository;
     private final UsuarioRepository usuarioRepository;
+    private final UsuarioService usuarioService;
 
     public ProjetoService(ProjetoRepository projetoRepository, ProjetoMapper projetoMapper,
             TipoProjetoRepository tipoProjetoRepository, RiscoProjetoRepository riscoProjetoRepository,
             UploadUtil uploadUtil, ProjetoUsuarioRepository projetoUsuarioRepository,
-            TipoVinculoRepository tipoVinculoRepository, UsuarioRepository usuarioRepository) {
+            TipoVinculoRepository tipoVinculoRepository, UsuarioRepository usuarioRepository,
+            UsuarioService usuarioService) {
         this.projetoRepository = projetoRepository;
         this.projetoMapper = projetoMapper;
         this.tipoProjetoRepository = tipoProjetoRepository;
@@ -60,6 +63,7 @@ private final ProjetoRepository projetoRepository;
         this.projetoUsuarioRepository = projetoUsuarioRepository;
         this.tipoVinculoRepository = tipoVinculoRepository;
         this.usuarioRepository = usuarioRepository;
+        this.usuarioService = usuarioService;
     }
 	
 	@Transactional(readOnly = true)
@@ -322,6 +326,28 @@ private final ProjetoRepository projetoRepository;
 			throw new EntityNotFoundException("Um ou mais riscos informados não foram encontrados.");
 		}
 		return riscos.stream().collect(java.util.stream.Collectors.toCollection(LinkedHashSet::new));
+	}
+
+	@Transactional
+	public void visualizarProjeto(Long idProjeto, Long usuarioId) {
+		Projeto projeto = projetoRepository.findById(idProjeto)
+				.orElseThrow(() -> new EntityNotFoundException("Sem projeto com o ID informado!"));
+		projeto.setVisualizacoes((projeto.getVisualizacoes() == null ? 0 : projeto.getVisualizacoes()) + 1);
+		projetoRepository.save(projeto);
+		if (projeto.getUsuarioCriador() != null) {
+			usuarioService.recalcularNivel(projeto.getUsuarioCriador());
+		}
+	}
+
+	@Transactional
+	public void seguirProjeto(Long idProjeto, Long usuarioId) {
+		Projeto projeto = projetoRepository.findById(idProjeto)
+				.orElseThrow(() -> new EntityNotFoundException("Sem projeto com o ID informado!"));
+		projeto.setSeguidores((projeto.getSeguidores() == null ? 0 : projeto.getSeguidores()) + 1);
+		projetoRepository.save(projeto);
+		if (projeto.getUsuarioCriador() != null) {
+			usuarioService.recalcularNivel(projeto.getUsuarioCriador());
+		}
 	}
 
 }

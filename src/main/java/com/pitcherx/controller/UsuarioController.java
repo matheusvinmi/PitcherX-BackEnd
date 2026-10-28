@@ -1,7 +1,8 @@
     package com.pitcherx.controller;
 
     import com.pitcherx.dto.usuario.*;
-import com.pitcherx.dto.usuario.ValidarCodigoVerificacaoRequestDTO;
+    import com.pitcherx.dto.usuario.AnaliseIdentidadeDTO;
+    import com.pitcherx.dto.usuario.ValidarCodigoVerificacaoRequestDTO;
 
     import com.pitcherx.dto.usuario.esqueciSenha.EsqueciSenhaRequestDTO;
     import com.pitcherx.dto.usuario.esqueciSenha.ResetarSenhaRequestDTO;
@@ -15,11 +16,14 @@ import com.pitcherx.dto.usuario.ValidarCodigoVerificacaoRequestDTO;
     import jakarta.validation.Valid;
     import org.springframework.http.HttpStatus;
     import org.springframework.http.ResponseEntity;
-    import org.springframework.security.access.prepost.PreAuthorize;
-    import org.springframework.web.bind.annotation.*;
-    import org.springframework.web.multipart.MultipartFile;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-    import java.util.List;
+import com.pitcherx.model.Usuario;
+
+import java.util.List;
 
     @RestController
     @RequestMapping("/usuario")
@@ -60,6 +64,57 @@ import com.pitcherx.dto.usuario.ValidarCodigoVerificacaoRequestDTO;
         public ResponseEntity<UsuarioResponseDTO> verificarConta(@Valid @RequestBody ValidarCodigoVerificacaoRequestDTO dto) {
             UsuarioResponseDTO usuarioResponseDTO = usuarioService.verificarConta(dto.getCodigoVerificacao());
             return ResponseEntity.status(HttpStatus.OK).body(usuarioResponseDTO);
+        }
+
+        /* ========================================================================
+           NOVO: Comprovante de identidade
+           ======================================================================== */
+
+        @PostMapping(value = "/{id}/comprovante-identidade", consumes = "multipart/form-data")
+        @PreAuthorize("hasRole('ADMIN') or #id == principal.idUsuario")
+        @Operation(summary = "Anexar comprovante de identidade (foto do rosto ou papel de posse da empresa)")
+        public ResponseEntity<UsuarioResponseDTO> enviarComprovanteIdentidade(
+                @PathVariable Long id,
+                @RequestParam("arquivo") MultipartFile arquivo) {
+            UsuarioResponseDTO response = usuarioService.enviarComprovanteIdentidade(id, arquivo);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        }
+
+        /* ========================================================================
+           NOVO: Análise de identidade (apenas admin)
+           ======================================================================== */
+
+        @GetMapping("/admin/identidade-pendentes")
+        @PreAuthorize("hasRole('ADMIN')")
+        @Operation(summary = "Listar usuários com comprovante de identidade pendente (apenas admin)")
+        public ResponseEntity<List<UsuarioResponseDTO>> listarPendentesIdentidade() {
+            return ResponseEntity.ok(usuarioService.listarPendentesIdentidade());
+        }
+
+        @PostMapping("/admin/analise-identidade/{idUsuario}")
+        @PreAuthorize("hasRole('ADMIN')")
+        @Operation(summary = "Aprovar ou reprovar identidade de usuário (apenas admin)")
+        public ResponseEntity<UsuarioResponseDTO> analisarIdentidade(
+                @PathVariable Long idUsuario,
+                @Valid @RequestBody AnaliseIdentidadeDTO dto,
+                @AuthenticationPrincipal Usuario admin) {
+            UsuarioResponseDTO response = usuarioService.analisarIdentidade(idUsuario, dto, admin);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        }
+
+        /* ========================================================================
+           NOVO: Alterar nível de conta (apenas admin)
+           ======================================================================== */
+
+        @PutMapping("/admin/nivel-conta/{idUsuario}")
+        @PreAuthorize("hasRole('ADMIN')")
+        @Operation(summary = "Alterar nível de conta de um usuário (apenas admin)")
+        public ResponseEntity<UsuarioResponseDTO> alterarNivelConta(
+                @PathVariable Long idUsuario,
+                @RequestParam Long nivelId,
+                @AuthenticationPrincipal Usuario admin) {
+            UsuarioResponseDTO response = usuarioService.alterarNivelConta(idUsuario, nivelId, admin);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
         }
 
         @PutMapping("/{id}")

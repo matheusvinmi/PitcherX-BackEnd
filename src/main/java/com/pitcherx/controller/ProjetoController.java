@@ -148,6 +148,22 @@ public class ProjetoController {
         return ResponseEntity.noContent().build();
     }
     
+    @PostMapping("/{id}/visualizar")
+    @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Registrar visualização de projeto (incrementa contador)")
+    public ResponseEntity<Void> visualizarProjeto(@PathVariable Long id, @AuthenticationPrincipal Usuario usuario) {
+        projetoService.visualizarProjeto(id, usuario.getIdUsuario());
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{id}/seguir")
+    @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Seguir projeto (incrementa contador de seguidores)")
+    public ResponseEntity<Void> seguirProjeto(@PathVariable Long id, @AuthenticationPrincipal Usuario usuario) {
+        projetoService.seguirProjeto(id, usuario.getIdUsuario());
+        return ResponseEntity.ok().build();
+    }
+
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'USUARIO', 'EMPRESA')")
     @Operation(description = "Endpoint para deletar um projeto")
