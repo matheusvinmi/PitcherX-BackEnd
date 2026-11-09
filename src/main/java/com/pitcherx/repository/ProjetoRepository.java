@@ -21,4 +21,7 @@ public interface ProjetoRepository extends JpaRepository<Projeto, Long>, JpaSpec
             @Param("usuarioId") Long usuarioId,
             @Param("visualizacoes") Integer visualizacoes,
             @Param("seguidores") Integer seguidores);
+
+    @Query("SELECT p FROM Projeto p WHERE p.tipoProjeto.nomeTipoProjeto LIKE CONCAT('%', :nomeArea, '%')")
+    List<Projeto> findByTipoProjetoNomeContendo(@Param("nomeArea") String nomeArea);
 }
