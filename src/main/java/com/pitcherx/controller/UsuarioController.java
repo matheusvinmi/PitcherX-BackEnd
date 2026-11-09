@@ -14,8 +14,11 @@
     import io.swagger.v3.oas.annotations.Operation;
     import io.swagger.v3.oas.annotations.tags.Tag;
     import jakarta.validation.Valid;
-    import org.springframework.http.HttpStatus;
-    import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -87,8 +90,9 @@ import java.util.List;
         @GetMapping("/admin/identidade-pendentes")
         @PreAuthorize("hasRole('ADMIN')")
         @Operation(summary = "Listar usuários com comprovante de identidade pendente (apenas admin)")
-        public ResponseEntity<List<UsuarioResponseDTO>> listarPendentesIdentidade() {
-            return ResponseEntity.ok(usuarioService.listarPendentesIdentidade());
+        public ResponseEntity<Page<UsuarioResponseDTO>> listarPendentesIdentidade(
+                @PageableDefault(page = 0, size = 20) Pageable pageable) {
+            return ResponseEntity.ok(usuarioService.listarPendentesIdentidade(pageable));
         }
 
         @PostMapping("/admin/analise-identidade/{idUsuario}")
@@ -111,9 +115,9 @@ import java.util.List;
         @Operation(summary = "Alterar nível de conta de um usuário (apenas admin)")
         public ResponseEntity<UsuarioResponseDTO> alterarNivelConta(
                 @PathVariable Long idUsuario,
-                @RequestParam Long nivelId,
+                @Valid @RequestBody NivelContaAlteracaoDTO dto,
                 @AuthenticationPrincipal Usuario admin) {
-            UsuarioResponseDTO response = usuarioService.alterarNivelConta(idUsuario, nivelId, admin);
+            UsuarioResponseDTO response = usuarioService.alterarNivelConta(idUsuario, dto.nivelId(), admin);
             return ResponseEntity.status(HttpStatus.OK).body(response);
         }
 
@@ -196,21 +200,6 @@ import java.util.List;
         @Operation(description = "Endpoint para remover a foto de perfil do usuário")
         public ResponseEntity<Void> removerFoto(@PathVariable Long id) {
             usuarioService.removerFotoUsuario(id);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        }
-
-        @PostMapping(value = "/{id}/video", consumes = "multipart/form-data")
-        @PreAuthorize("hasRole('ADMIN') or #id == principal.idUsuario")
-        @Operation(description = "Endpoint para atualizar o video de perfil do usuário")
-        public ResponseEntity<UsuarioResponseDTO> atualizarVideo(@PathVariable Long id, @RequestParam("arquivo") MultipartFile arquivo) {
-            return ResponseEntity.status(HttpStatus.OK).body(usuarioService.atualizarVideoUsuario(id, arquivo));
-        }
-
-        @DeleteMapping("/{id}/video")
-        @PreAuthorize("hasRole('ADMIN') or #id == principal.idUsuario")
-        @Operation(description = "Endpoint para remover o video de perfil do usuário")
-        public ResponseEntity<Void> removerVideo(@PathVariable Long id) {
-            usuarioService.removerVideoUsuario(id);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }
 

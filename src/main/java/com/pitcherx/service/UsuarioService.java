@@ -34,6 +34,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 @Service
 public class UsuarioService {
 
@@ -123,8 +126,10 @@ public class UsuarioService {
             throw new IllegalArgumentException("Já existe um usuário com esse email!");
         }
 
-        String senhaHash = passwordEncoder.encode(usuarioRequestDTO.senhaUsuario());
-        usuario.setSenhaUsuario(senhaHash);
+        if (usuarioRequestDTO.senhaUsuario() != null && !usuarioRequestDTO.senhaUsuario().isBlank()) {
+            String senhaHash = passwordEncoder.encode(usuarioRequestDTO.senhaUsuario());
+            usuario.setSenhaUsuario(senhaHash);
+        }
         usuarioMapper.updateFromDTO(usuarioRequestDTO, usuario);
 
         Usuario salvo = usuarioRepository.save(usuario);
@@ -258,21 +263,6 @@ public class UsuarioService {
     }
 
     @Transactional
-    public UsuarioResponseDTO atualizarVideoUsuario(Long idUsuario, MultipartFile arquivo) {
-        Usuario usuario = usuarioRepository.findById(idUsuario)
-                .orElseThrow(() -> new EntityNotFoundException("Sem usuário com o ID informado!"));
-
-        String novaUrl = uploadUtil.salvarVideo(arquivo);
-        uploadUtil.limparAposTransacaoVideos(
-                usuario.getUrlVideoUsuario() == null ? List.of() : List.of(usuario.getUrlVideoUsuario()),
-                List.of(novaUrl));
-        usuario.setUrlVideoUsuario(novaUrl);
-
-        Usuario salvo = usuarioRepository.save(usuario);
-        return usuarioMapper.toDTO(salvo);
-    }
-
-    @Transactional
     public void removerFotoUsuario(Long idUsuario) {
         Usuario usuario = usuarioRepository.findById(idUsuario)
                 .orElseThrow(() -> new EntityNotFoundException("Sem usuário com o ID informado!"));
@@ -281,19 +271,6 @@ public class UsuarioService {
                 usuario.getUrlImagemUsuario() == null ? List.of() : List.of(usuario.getUrlImagemUsuario()),
                 List.of());
         usuario.setUrlImagemUsuario(null);
-
-        usuarioRepository.save(usuario);
-    }
-
-    @Transactional
-    public void removerVideoUsuario(Long idUsuario) {
-        Usuario usuario = usuarioRepository.findById(idUsuario)
-                .orElseThrow(() -> new EntityNotFoundException("Sem usuário com o ID informado!"));
-
-        uploadUtil.limparAposTransacaoVideos(
-                usuario.getUrlVideoUsuario() == null ? List.of() : List.of(usuario.getUrlVideoUsuario()),
-                List.of());
-        usuario.setUrlVideoUsuario(null);
 
         usuarioRepository.save(usuario);
     }
@@ -307,7 +284,10 @@ public class UsuarioService {
         Usuario usuario = usuarioRepository.findById(idUsuario)
                 .orElseThrow(() -> new EntityNotFoundException("Sem usuário com o ID informado!"));
 
-        if (usuario.getTentativasIdentidade() != null && usuario.getTentativasIdentidade() >= 5) {
+        if ("APROVADA".equals(usuario.getStatusAnaliseIdentidade())) {
+            throw new BusinessException("Sua identidade já foi aprovada.", "IDENTIDADE_JA_APROVADA");
+        }
+        if ("REPROVADA".equals(usuario.getStatusAnaliseIdentidade()) && usuario.getTentativasIdentidade() >= 5) {
             throw new BusinessException("Limite máximo de 5 tentativas de envio de comprovante excedido.", "LIMITE_TENTATIVAS_IDENTIDADE");
         }
 
@@ -329,17 +309,15 @@ public class UsuarioService {
                 .orElseThrow(() -> new EntityNotFoundException("Sem usuário com o ID informado!"));
 
         if (!"PENDENTE".equals(usuario.getStatusAnaliseIdentidade())) {
-            throw new BusinessException("Identência já foi analisada anteriormente.", "IDENTIDADE_JA_ANALISADA");
+            throw new BusinessException("Identidade já foi analisada anteriormente.", "IDENTIDADE_JA_ANALISADA");
         }
 
         if ("APROVADA".equalsIgnoreCase(dto.status())) {
             usuario.setStatusAnaliseIdentidade("APROVADA");
             usuario.setActive(true);
-            emailService.enviarAceiteTermoVinculo(
+            emailService.enviarIdentidadeAprovada(
                     usuario.getEmailUsuario(),
-                    usuario.getNomeUsuario(),
-                    null,
-                    "Sua identidade foi aprovada e sua conta está ativa!"
+                    usuario.getNomeUsuario()
             );
             criarNotificacao(usuario.getIdUsuario(),
                     "Identidade aprovada",
@@ -350,15 +328,14 @@ public class UsuarioService {
                 throw new BusinessException("Justificativa é obrigatória para reprovação de identidade.", "JUSTIFICATIVA_OBRIGATORIA");
             }
             usuario.setStatusAnaliseIdentidade("REPROVADA");
-            emailService.enviarAceiteTermoVinculo(
+            emailService.enviarIdentidadeReprovada(
                     usuario.getEmailUsuario(),
                     usuario.getNomeUsuario(),
-                    null,
-                    "Sua identência foi reprovada. Motivo: " + dto.justificativa() + ". Você pode reenviar o comprovante."
+                    dto.justificativa()
             );
             criarNotificacao(usuario.getIdUsuario(),
                     "Identidade reprovada",
-                    "Sua identência foi reprovada. Motivo: " + dto.justificativa() + ". Você pode reenviar o comprovante.",
+                    "Sua identidade foi reprovada. Motivo: " + dto.justificativa() + ". Você pode reenviar o comprovante.",
                     "IDENTIDADE_REPROVADA", usuario.getIdUsuario());
         } else {
             throw new BusinessException("Status inválido. Use APROVADA ou REPROVADA.", "STATUS_INVALIDO");
@@ -369,10 +346,9 @@ public class UsuarioService {
     }
 
     @Transactional(readOnly = true)
-    public List<UsuarioResponseDTO> listarPendentesIdentidade() {
-        return usuarioRepository.findByStatusAnaliseIdentidade("PENDENTE").stream()
-                .map(usuarioMapper::toDTO)
-                .toList();
+    public Page<UsuarioResponseDTO> listarPendentesIdentidade(Pageable pageable) {
+        return usuarioRepository.findByStatusAnaliseIdentidade("PENDENTE", pageable)
+                .map(usuarioMapper::toDTO);
     }
 
     @Transactional

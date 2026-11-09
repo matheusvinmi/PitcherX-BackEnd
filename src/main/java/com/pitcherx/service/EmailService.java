@@ -132,4 +132,56 @@ public class EmailService {
         }
     }
 
+    @Transactional
+    public void enviarIdentidadeAprovada(String email, String nome) {
+        try {
+            Context context = new Context();
+            context.setVariable("nome", nome != null ? nome : "Usuário");
+            context.setVariable("ano", LocalDate.now().getYear());
+
+            String htmlContent = templateEngine.process("identidade-aprovada.html", context);
+
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+
+            messageHelper.setTo(email);
+            messageHelper.setSubject("Identidade Aprovada - PitcherX");
+            messageHelper.setText(htmlContent, true);
+            messageHelper.setFrom("matheusviniciusgali05@gmail.com");
+
+            mailSender.send(mimeMessage);
+
+        } catch (MailException e) {
+            throw new RuntimeException("Falha ao enviar email de identidade aprovada", e);
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao processar envio de email", e);
+        }
+    }
+
+    @Transactional
+    public void enviarIdentidadeReprovada(String email, String nome, String justificativa) {
+        try {
+            Context context = new Context();
+            context.setVariable("nome", nome != null ? nome : "Usuário");
+            context.setVariable("justificativa", justificativa != null ? justificativa : "Não informado");
+            context.setVariable("ano", LocalDate.now().getYear());
+
+            String htmlContent = templateEngine.process("identidade-reprovada.html", context);
+
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+
+            messageHelper.setTo(email);
+            messageHelper.setSubject("Identidade Reprovada - PitcherX");
+            messageHelper.setText(htmlContent, true);
+            messageHelper.setFrom("matheusviniciusgali05@gmail.com");
+
+            mailSender.send(mimeMessage);
+
+        } catch (MailException e) {
+            throw new RuntimeException("Falha ao enviar email de identidade reprovada", e);
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao processar envio de email", e);
+        }
+    }
 }

@@ -1,11 +1,13 @@
 package com.pitcherx.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
 import com.pitcherx.model.ProjetoImagem;
+import com.pitcherx.model.ProjetoInteracao;
 import com.pitcherx.model.ProjetoUsuario;
 import com.pitcherx.model.ProjetoVideo;
 import com.pitcherx.model.Usuario;
@@ -20,12 +22,14 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.pitcherx.dto.projeto.ProjetoRequestDTO;
 import com.pitcherx.dto.projeto.ProjetoResponseDTO;
+import com.pitcherx.exceptions.BusinessException;
 import com.pitcherx.mapper.ProjetoMapper;
 import com.pitcherx.model.Projeto;
 import com.pitcherx.model.RiscoProjeto;
 import com.pitcherx.model.TipoProjeto;
 import com.pitcherx.model.TipoVinculo;
 import com.pitcherx.model.TipoVinculoEnum;
+import com.pitcherx.repository.ProjetoInteracaoRepository;
 import com.pitcherx.repository.ProjetoRepository;
 import com.pitcherx.repository.ProjetoUsuarioRepository;
 import com.pitcherx.repository.RiscoProjetoRepository;
@@ -49,12 +53,15 @@ private final ProjetoRepository projetoRepository;
     private final TipoVinculoRepository tipoVinculoRepository;
     private final UsuarioRepository usuarioRepository;
     private final UsuarioService usuarioService;
+    private final ProjetoInteracaoRepository projetoInteracaoRepository;
+
+    private static final long LIMITE_VISUALIZACAO_POR_MINUTO = 60_000; // 1 minuto em ms
 
     public ProjetoService(ProjetoRepository projetoRepository, ProjetoMapper projetoMapper,
             TipoProjetoRepository tipoProjetoRepository, RiscoProjetoRepository riscoProjetoRepository,
             UploadUtil uploadUtil, ProjetoUsuarioRepository projetoUsuarioRepository,
             TipoVinculoRepository tipoVinculoRepository, UsuarioRepository usuarioRepository,
-            UsuarioService usuarioService) {
+            UsuarioService usuarioService, ProjetoInteracaoRepository projetoInteracaoRepository) {
         this.projetoRepository = projetoRepository;
         this.projetoMapper = projetoMapper;
         this.tipoProjetoRepository = tipoProjetoRepository;
@@ -64,6 +71,7 @@ private final ProjetoRepository projetoRepository;
         this.tipoVinculoRepository = tipoVinculoRepository;
         this.usuarioRepository = usuarioRepository;
         this.usuarioService = usuarioService;
+        this.projetoInteracaoRepository = projetoInteracaoRepository;
     }
 	
 	@Transactional(readOnly = true)
@@ -332,6 +340,26 @@ private final ProjetoRepository projetoRepository;
 	public void visualizarProjeto(Long idProjeto, Long usuarioId) {
 		Projeto projeto = projetoRepository.findById(idProjeto)
 				.orElseThrow(() -> new EntityNotFoundException("Sem projeto com o ID informado!"));
+
+		// Rate limiting: máximo 1 visualização por minuto por usuário/projeto
+		var ultima = projetoInteracaoRepository.findTopByProjeto_IdProjetoAndUsuario_IdUsuarioAndTipoInteracaoOrderByDataInteracaoDesc(
+				idProjeto, usuarioId, ProjetoInteracao.TipoInteracao.VISUALIZACAO);
+		if (ultima.isPresent()) {
+			long diff = LocalDateTime.now().toEpochSecond(java.time.ZoneOffset.UTC) - ultima.get().getDataInteracao().toEpochSecond(java.time.ZoneOffset.UTC);
+			if (diff < 1) {
+				throw new BusinessException("Aguarde antes de registrar outra visualização deste projeto.", "RATE_LIMIT_VISUALIZACAO");
+			}
+		}
+
+		// Registrar interação (idempotente por minuto)
+		ProjetoInteracao interacao = new ProjetoInteracao();
+		interacao.setProjeto(projeto);
+		interacao.setUsuario(usuarioRepository.findById(usuarioId)
+				.orElseThrow(() -> new EntityNotFoundException("Sem usuário com o ID informado!")));
+		interacao.setTipoInteracao(ProjetoInteracao.TipoInteracao.VISUALIZACAO);
+		interacao.setDataInteracao(LocalDateTime.now());
+		projetoInteracaoRepository.save(interacao);
+
 		projeto.setVisualizacoes((projeto.getVisualizacoes() == null ? 0 : projeto.getVisualizacoes()) + 1);
 		projetoRepository.save(projeto);
 		if (projeto.getUsuarioCriador() != null) {
@@ -343,7 +371,33 @@ private final ProjetoRepository projetoRepository;
 	public void seguirProjeto(Long idProjeto, Long usuarioId) {
 		Projeto projeto = projetoRepository.findById(idProjeto)
 				.orElseThrow(() -> new EntityNotFoundException("Sem projeto com o ID informado!"));
-		projeto.setSeguidores((projeto.getSeguidores() == null ? 0 : projeto.getSeguidores()) + 1);
+
+		if (projeto.getUsuarioCriador() != null && projeto.getUsuarioCriador().getIdUsuario().equals(usuarioId)) {
+			throw new BusinessException("Não é possível seguir o próprio projeto.", "SEGUIR_PROPRIO_PROJETO");
+		}
+
+		Usuario usuario = usuarioRepository.findById(usuarioId)
+				.orElseThrow(() -> new EntityNotFoundException("Sem usuário com o ID informado!"));
+
+		boolean jaSegue = projetoInteracaoRepository.existsByProjeto_IdProjetoAndUsuario_IdUsuarioAndTipoInteracao(
+				idProjeto, usuarioId, ProjetoInteracao.TipoInteracao.SEGUIR);
+
+		if (jaSegue) {
+			// Deixar de seguir (toggle off)
+			projetoInteracaoRepository.deleteByProjeto_IdProjetoAndUsuario_IdUsuarioAndTipoInteracao(
+					idProjeto, usuarioId, ProjetoInteracao.TipoInteracao.SEGUIR);
+			projeto.setSeguidores(Math.max(0, (projeto.getSeguidores() == null ? 0 : projeto.getSeguidores()) - 1));
+		} else {
+			// Seguir (toggle on)
+			ProjetoInteracao interacao = new ProjetoInteracao();
+			interacao.setProjeto(projeto);
+			interacao.setUsuario(usuario);
+			interacao.setTipoInteracao(ProjetoInteracao.TipoInteracao.SEGUIR);
+			interacao.setDataInteracao(LocalDateTime.now());
+			projetoInteracaoRepository.save(interacao);
+			projeto.setSeguidores((projeto.getSeguidores() == null ? 0 : projeto.getSeguidores()) + 1);
+		}
+
 		projetoRepository.save(projeto);
 		if (projeto.getUsuarioCriador() != null) {
 			usuarioService.recalcularNivel(projeto.getUsuarioCriador());
